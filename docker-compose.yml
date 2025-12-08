@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: cps_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cps_db
+      POSTGRES_USER: cps_user
+      POSTGRES_PASSWORD: cps_pass
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cps-network
+
+  web:
+    build: .
+    image: cps_web
+    container_name: cps_spring_app
+    depends_on:
+      - postgres
+      - mailhog
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cps_db
+      SPRING_DATASOURCE_USERNAME: cps_user
+      SPRING_DATASOURCE_PASSWORD: cps_pass
+
+      # MailHog SMTP configuration
+      SPRING_MAIL_HOST: mailhog
+      SPRING_MAIL_PORT: 1025
+      SPRING_MAIL_USERNAME: ""
+      SPRING_MAIL_PASSWORD: ""
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: false
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
+
+    volumes:
+      - .:/app # Mount project source
+      - ~/.m2:/root/.m2 # Cache Maven dependencies
+    networks:
+      - cps-network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: cps_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI
+    networks:
+      - cps-network
+
+volumes:
+  postgres_data:
+
+
+networks:
+  cps-network:
