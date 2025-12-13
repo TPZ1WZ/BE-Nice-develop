@@ -216,11 +216,11 @@ public class ProductService {
 
         try {
             if (product.getImages() != null && !product.getImages().isEmpty()) {
-                String firstImage = product.getImages().get(0);
-                // Nếu là base64 image, sử dụng trực tiếp
-                if (firstImage != null && firstImage.startsWith("data:image/")) {
-                    thumbnail = firstImage;
-                }
+                // Luôn lấy ảnh đầu tiên
+                thumbnail = product.getImages().get(0);
+                System.out.println("Product " + product.getId() + " - " + product.getName() + " thumbnail: " + (thumbnail != null ? thumbnail.substring(0, Math.min(100, thumbnail.length())) : "null"));
+            } else {
+                System.out.println("Product " + product.getId() + " - " + product.getName() + " has NO images");
             }
         } catch (Exception e) {
             // Log error but continue processing

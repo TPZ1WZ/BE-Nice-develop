@@ -83,16 +83,22 @@ public class AdminOrderController {
                     dto.put("paymentMethod", order.getPaymentMethod());
                     dto.put("status", order.getStatus());
                     dto.put("totalAmount", order.getTotalAmount());
+                    dto.put("totalDiscount", order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0);
+                    dto.put("finalAmount", order.getFinalAmount());
+                    dto.put("quantity", order.getItems() != null ? order.getItems().stream().mapToInt(i -> i.getQuantity()).sum() : 0);
                     dto.put("createdAt", order.getCreatedAt());
                     dto.put("coupon", order.getCoupon() != null ? order.getCoupon().getCode() : null);
 
                     List<Map<String, Object>> items = order.getItems().stream().map(i -> {
                         Map<String, Object> m = new LinkedHashMap<>();
+                        m.put("id", i.getId());
                         m.put("productName", i.getProduct().getName());
+                        m.put("productPrice", i.getProductPrice());
                         m.put("quantity", i.getQuantity());
-                        m.put("price", i.getProductPrice());
                         m.put("size", i.getSize());
-                        m.put("subtotal", i.getProductPrice() * i.getQuantity());
+                        m.put("totalPrice", i.getProductPrice() * i.getQuantity());
+                        m.put("imageUrl", i.getProduct().getImages() != null && !i.getProduct().getImages().isEmpty() 
+                            ? i.getProduct().getImages().get(0) : "");
                         return m;
                     }).toList();
 
