@@ -67,8 +67,12 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
     @GetMapping
     public ResponseEntity<List<OrderDTO>> getUserOrders(@AuthenticationPrincipal User user) {
-        // TODO: Implement getUserOrders in OrderService
-        return ResponseEntity.ok(List.of());
+        try {
+            List<OrderDTO> orders = orderService.getUserOrders(user);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.ok(List.of());
+        }
     }
 
     @SecurityRequirement(name = "bearerAuth")
@@ -78,8 +82,12 @@ public class OrderController {
     public ResponseEntity<OrderDTO> getOrderDetails(
             @AuthenticationPrincipal User user,
             @PathVariable Long orderId) {
-        // TODO: Implement getOrderById in OrderService
-        return ResponseEntity.notFound().build();
+        try {
+            OrderDTO order = orderService.getOrderById(user, orderId);
+            return ResponseEntity.ok(order);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @SecurityRequirement(name = "bearerAuth")

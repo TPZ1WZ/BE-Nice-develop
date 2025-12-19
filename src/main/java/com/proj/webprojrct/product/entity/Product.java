@@ -35,6 +35,10 @@ public class Product extends BaseEntity {
     @JdbcTypeCode(SqlTypes.ARRAY)
     private List<String> images;
 
+    @Column(columnDefinition = "text[]")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    private List<String> sizes;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

@@ -53,6 +53,9 @@ public class SecurityUtil {
                 .expiresAt(validity)
                 .subject(userName)
                 .claim("authorities", authorities) // Store authorities as a list of strings
+                .subject(userName)
+                .claim("authorities", authorities) // Store authorities as a list of strings
+                .claim("id", user.getId())
                 .build();
         // .claim("user", user.getUserName())
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
@@ -108,6 +111,33 @@ public class SecurityUtil {
         } else if (authentication.getPrincipal() instanceof String s) {
             return s;
         }
+        return null;
+    }
+
+    /**
+     * Get the id of the current user.
+     *
+     * @return the id of the current user.
+     */
+    public static Long getCurrentUserId() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        
+        if (authentication == null) {
+            return null;
+        }
+        
+        // Case 1: Principal is a User entity (set by JwtAuthenticationFilter)
+        if (authentication.getPrincipal() instanceof User) {
+            return ((User) authentication.getPrincipal()).getId();
+        }
+        
+        // Case 2: Principal is Jwt (standard OAuth2 resource server)
+        if (authentication.getPrincipal() instanceof Jwt) {
+            Jwt jwt = (Jwt) authentication.getPrincipal();
+            return (Long) jwt.getClaim("id");
+        }
+        
         return null;
     }
 }

@@ -14,7 +14,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByTxnId(String txnId);
     List<Order> findByUserIdOrderByCreatedAtDesc(Long userId);
     
-    List<Order> findByStatus(String status);
+    @Query("SELECT o FROM Order o WHERE UPPER(o.status) = UPPER(:status)")
+    List<Order> findByStatus(@Param("status") String status);
+    
     @Query("SELECT COUNT(o) FROM Order o")
     long countAllOrders();
 

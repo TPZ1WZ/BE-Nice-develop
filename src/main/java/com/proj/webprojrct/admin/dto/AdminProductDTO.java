@@ -25,5 +25,6 @@ public class AdminProductDTO {
     private String status; // "active" or "inactive"
     private String image;
     private String description;
+    private java.util.List<String> sizes;
     private LocalDateTime createdAt;
 }

@@ -26,8 +26,10 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final CategoryRepo categoryRepo;
 
-    public Page<Product> getFilteredProducts(List<Long> categoryIds, String text, String sort, String price, int page, int size) {
-        if (sort == null) sort = "default";
+    public Page<Product> getFilteredProducts(List<Long> categoryIds, String text, String sort, String price, int page,
+            int size) {
+        if (sort == null)
+            sort = "default";
         Sort sortOption = switch (sort) {
             case "price_asc" -> Sort.by("price").ascending();
             case "price_desc" -> Sort.by("price").descending();
@@ -52,19 +54,24 @@ public class ProductService {
         }
 
         if (!categoryIds.isEmpty() && StringUtils.hasText(text) && min != null && max != null) {
-            return productRepository.findByCategoryIdInAndNameContainingIgnoreCaseAndPriceBetweenAndIsDeleteFalse(categoryIds, text, min, max, pageable);
+            return productRepository.findByCategoryIdInAndNameContainingIgnoreCaseAndPriceBetweenAndIsDeleteFalse(
+                    categoryIds, text, min, max, pageable);
         } else if (!categoryIds.isEmpty() && min != null && max != null) {
             return productRepository.findByCategoryIdInAndPriceBetweenAndIsDeleteFalse(categoryIds, min, max, pageable);
         } else if (StringUtils.hasText(text) && min != null && max != null) {
-            return productRepository.findByNameContainingIgnoreCaseAndPriceBetweenAndIsDeleteFalseAndCategory_IsDeleteFalse(text, min, max, pageable);
+            return productRepository
+                    .findByNameContainingIgnoreCaseAndPriceBetweenAndIsDeleteFalseAndCategory_IsDeleteFalse(text, min,
+                            max, pageable);
         } else if (min != null && max != null) {
             return productRepository.findByPriceBetweenAndIsDeleteFalseAndCategory_IsDeleteFalse(min, max, pageable);
         } else if (!categoryIds.isEmpty() && StringUtils.hasText(text)) {
-            return productRepository.findByCategoryIdInAndNameContainingIgnoreCaseAndIsDeleteFalse(categoryIds, text, pageable);
+            return productRepository.findByCategoryIdInAndNameContainingIgnoreCaseAndIsDeleteFalse(categoryIds, text,
+                    pageable);
         } else if (!categoryIds.isEmpty()) {
             return productRepository.findByCategoryIdInAndIsDeleteFalse(categoryIds, pageable);
         } else if (StringUtils.hasText(text)) {
-            return productRepository.findByNameContainingIgnoreCaseAndIsDeleteFalseAndCategory_IsDeleteFalse(text, pageable);
+            return productRepository.findByNameContainingIgnoreCaseAndIsDeleteFalseAndCategory_IsDeleteFalse(text,
+                    pageable);
         } else {
             return productRepository.findByIsDeleteFalseAndCategory_IsDeleteFalse(pageable);
         }
@@ -126,8 +133,7 @@ public class ProductService {
                         filter.getMinPrice(),
                         filter.getMaxPrice(),
                         filter.getCategoryIds(),
-                        pageable
-                );
+                        pageable);
             }
 
             // Convert sang DTO
@@ -145,8 +151,7 @@ public class ProductService {
                     productPage.isFirst(),
                     productPage.isLast(),
                     productPage.hasNext(),
-                    productPage.hasPrevious()
-            );
+                    productPage.hasPrevious());
         } catch (Exception e) {
             System.err.println("Error in getProductsWithFilters: " + e.getMessage());
             e.printStackTrace();
@@ -160,8 +165,7 @@ public class ProductService {
                     true,
                     true,
                     false,
-                    false
-            );
+                    false);
         }
     }
 
@@ -173,8 +177,7 @@ public class ProductService {
                 filter.getName(),
                 filter.getMinPrice(),
                 filter.getMaxPrice(),
-                0L
-        );
+                0L);
 
         return products.stream()
                 .map(this::convertToListDto)
@@ -218,7 +221,8 @@ public class ProductService {
             if (product.getImages() != null && !product.getImages().isEmpty()) {
                 // Luôn lấy ảnh đầu tiên
                 thumbnail = product.getImages().get(0);
-                System.out.println("Product " + product.getId() + " - " + product.getName() + " thumbnail: " + (thumbnail != null ? thumbnail.substring(0, Math.min(100, thumbnail.length())) : "null"));
+                System.out.println("Product " + product.getId() + " - " + product.getName() + " thumbnail: "
+                        + (thumbnail != null ? thumbnail.substring(0, Math.min(100, thumbnail.length())) : "null"));
             } else {
                 System.out.println("Product " + product.getId() + " - " + product.getName() + " has NO images");
             }
@@ -232,8 +236,8 @@ public class ProductService {
                 product.getId(),
                 product.getName(),
                 product.getPrice(),
-                thumbnail
-        );
+                thumbnail,
+                product.getSizes());
     }
 
     public Product getProductById(Long id) {
@@ -288,7 +292,6 @@ public class ProductService {
         return productMapper.toResponseDto(updated);
     }
 
-
     public void deleteProduct(Long id) {
         productRepository.findById(id).ifPresent(product -> {
             product.setDelete(true);
@@ -314,7 +317,8 @@ public class ProductService {
      */
     public List<String> getAllBrands() {
         // Trả về default brands vì entity Product không có brand field
-        return List.of("Nike", "Adidas", "Puma", "New Balance", "Converse", "Vans", "Reebok", "Jordan", "Under Armour", "ASICS");
+        return List.of("Nike", "Adidas", "Puma", "New Balance", "Converse", "Vans", "Reebok", "Jordan", "Under Armour",
+                "ASICS");
     }
 
     /**
@@ -326,8 +330,7 @@ public class ProductService {
                 .map(category -> new CategoryDto(
                         category.getId(),
                         category.getName(),
-                        category.getDescription()
-                ))
+                        category.getDescription()))
                 .collect(Collectors.toList());
     }
 

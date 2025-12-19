@@ -46,6 +46,7 @@ public class AdminProductController {
                 .status(product.isDelete() ? "inactive" : "active") // Map isDelete -> status
                 .image(product.getImages() != null && !product.getImages().isEmpty() ? product.getImages().get(0) : null) // Lấy ảnh đầu tiên
                 .description(product.getDescription())
+                .sizes(product.getSizes()) // Thêm sizes
                 .createdAt(product.getCreatedAt())
                 .build();
     }
@@ -119,6 +120,12 @@ public class AdminProductController {
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setDelete("inactive".equals(dto.getStatus())); // status -> isDelete
+        
+        // Set sizes
+        if (dto.getSizes() != null && !dto.getSizes().isEmpty()) {
+            product.setSizes(dto.getSizes());
+        }
+        
         // Note: images cần convert String -> List<String>
         if (dto.getImage() != null) {
             product.setImages(List.of(dto.getImage()));
@@ -157,6 +164,12 @@ public class AdminProductController {
                     existingProduct.setPrice(dto.getPrice());
                     existingProduct.setStock(dto.getStock());
                     existingProduct.setDelete("inactive".equals(dto.getStatus()));
+                    
+                    // Update sizes
+                    if (dto.getSizes() != null && !dto.getSizes().isEmpty()) {
+                        existingProduct.setSizes(dto.getSizes());
+                    }
+                    
                     if (dto.getImage() != null) {
                         existingProduct.setImages(List.of(dto.getImage()));
                     }

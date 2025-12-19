@@ -213,4 +213,29 @@ public class OrderService {
                 .user(userDTO)
                 .build();
     }
+    
+    /**
+     * Lấy tất cả đơn hàng của user
+     */
+    public List<OrderDTO> getUserOrders(User user) {
+        var orders = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        return orders.stream()
+                .map(order -> toOrderDTO(order, user))
+                .toList();
+    }
+    
+    /**
+     * Lấy chi tiết 1 đơn hàng của user
+     */
+    public OrderDTO getOrderById(User user, Long orderId) {
+        var order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        
+        // Kiểm tra xem order có thuộc user không
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Bạn không có quyền xem đơn hàng này");
+        }
+        
+        return toOrderDTO(order, user);
+    }
 }
