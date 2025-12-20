@@ -55,7 +55,6 @@ public class CartController {
     // ❌ 3️⃣ Xóa sản phẩm khỏi giỏ
     @DeleteMapping("/remove/{productId}/{size}")
     public Object removeItem(@AuthenticationPrincipal User user, @PathVariable Long productId, @PathVariable String size) {
-        cartService.removeItem(user, productId, size);
-        return Map.of("status", "✅ Xóa sản phẩm khỏi giỏ thành công");
+        return cartService.removeItemAndGetCart(user, productId, size);
     }
 }

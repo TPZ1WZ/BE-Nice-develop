@@ -7,6 +7,8 @@ import com.proj.webprojrct.cart.repository.CartItemRepository;
 import com.proj.webprojrct.cart.repository.CartRepository;
 import com.proj.webprojrct.product.repository.ProductRepository;
 import com.proj.webprojrct.user.entity.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public CartResponse getCartByUser(User user) {
@@ -25,12 +30,15 @@ public class CartService {
         // Sử dụng getOrCreateCart để tránh duplicate
         Cart cart = getOrCreateCart(user);
         
-        System.out.println("📦 Cart ID: " + cart.getId() + ", Items count: " + 
-            (cart.getItems() != null ? cart.getItems().size() : "null"));
+        // Query items directly from database to avoid stale cache
+        var freshItems = cartItemRepository.findAllByCartId(cart.getId());
         
-        if (cart.getItems() != null && !cart.getItems().isEmpty()) {
+        System.out.println("📦 Cart ID: " + cart.getId() + ", Fresh items count: " + 
+            (freshItems != null ? freshItems.size() : "null"));
+        
+        if (freshItems != null && !freshItems.isEmpty()) {
             System.out.println("📋 Cart items details:");
-            cart.getItems().forEach(item -> {
+            freshItems.forEach(item -> {
                 System.out.println("  - Product: " + item.getProduct().getName() + 
                     ", Size: " + item.getSize() + 
                     ", Quantity: " + item.getQuantity());
@@ -126,20 +134,82 @@ public class CartService {
     }
 
     // Xóa sản phẩm khỏi giỏ hàng
+    @Transactional
     public void removeItem(User user, Long productId, String size) {
+        System.out.println("🗑️ removeItem - userId: " + user.getId() + ", productId: " + productId + ", size: " + size);
+        
         var cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng của người dùng"));
 
         var cartItem = cartItemRepository.findByCartIdAndSizeAndProductId(cart.getId(), size, productId)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không có trong giỏ hàng"));
 
+        System.out.println("🗑️ Deleting cart item ID: " + cartItem.getId());
         cartItemRepository.delete(cartItem);
+        cartItemRepository.flush(); // Force delete to execute immediately
 
-        if (cart.getItems().isEmpty()) {
+        System.out.println("✅ Cart item deleted successfully");
+        
+        // Refresh cart to get updated items list
+        cart = cartRepository.findById(cart.getId()).orElse(cart);
+        
+        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+            System.out.println("🧹 Cart is now empty, resetting totals");
             cart.setTotalPrice(0.0);
             cart.setTotalQuantity(0);
             cartRepository.save(cart);
         }
+    }
+    
+    // Xóa và return cart ngay lập tức (trong cùng transaction)
+    @Transactional
+    public CartResponse removeItemAndGetCart(User user, Long productId, String size) {
+        System.out.println("🗑️ removeItemAndGetCart - userId: " + user.getId() + ", productId: " + productId + ", size: " + size);
+        
+        var cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng của người dùng"));
+
+        // Verify item exists trước khi delete
+        var cartItem = cartItemRepository.findByCartIdAndSizeAndProductId(cart.getId(), size, productId)
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không có trong giỏ hàng"));
+
+        System.out.println("🗑️ Deleting cart item ID: " + cartItem.getId() + " using native SQL");
+        
+        // Use native SQL DELETE - bypass Hibernate entity management
+        int deletedCount = cartItemRepository.deleteByCartIdAndProductIdAndSize(cart.getId(), productId, size);
+        
+        System.out.println("✅ Native DELETE executed, rows affected: " + deletedCount);
+        
+        // Clear Hibernate cache để query fresh từ database
+        entityManager.clear();
+        
+        System.out.println("✅ Cart item deleted, now fetching fresh cart data");
+        
+        // Query fresh data from database sau khi clear cache
+        var freshItems = cartItemRepository.findAllByCartId(cart.getId());
+        System.out.println("📦 Fresh items count after delete: " + (freshItems != null ? freshItems.size() : "null"));
+        
+        if (freshItems != null && !freshItems.isEmpty()) {
+            System.out.println("📋 Remaining cart items:");
+            freshItems.forEach(item -> {
+                System.out.println("  - Product: " + item.getProduct().getName() + 
+                    ", Size: " + item.getSize() + 
+                    ", Quantity: " + item.getQuantity());
+            });
+        } else {
+            System.out.println("🧹 Cart is now empty");
+        }
+        
+        // Query fresh cart entity sau khi clear cache
+        cart = cartRepository.findById(cart.getId())
+            .orElseThrow(() -> new RuntimeException("Cart not found"));
+        
+        // CRITICAL: Manually set fresh items để override cached collection
+        cart.setItems(new java.util.ArrayList<>(freshItems));
+        
+        System.out.println("🔄 Cart entity refreshed with " + cart.getItems().size() + " items");
+        
+        return new CartResponse(cart);
     }
 
 
