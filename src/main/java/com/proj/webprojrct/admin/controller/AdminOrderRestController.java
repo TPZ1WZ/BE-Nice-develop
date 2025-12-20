@@ -62,6 +62,8 @@ public class AdminOrderRestController {
             dto.put("finalAmount", finalAmount);
             dto.put("quantity", order.getItems() != null ? order.getItems().stream().mapToInt(i -> i.getQuantity()).sum() : 0);
             dto.put("createdAt", order.getCreatedAt());
+            dto.put("customerNote", order.getCustomerNote());
+            dto.put("adminNote", order.getAdminNote());
             return dto;
         }).toList();
     }
@@ -89,6 +91,8 @@ public class AdminOrderRestController {
                     dto.put("quantity", order.getItems() != null ? order.getItems().stream().mapToInt(i -> i.getQuantity()).sum() : 0);
                     dto.put("createdAt", order.getCreatedAt());
                     dto.put("coupon", order.getCoupon() != null ? order.getCoupon().getCode() : null);
+                    dto.put("customerNote", order.getCustomerNote());
+                    dto.put("adminNote", order.getAdminNote());
 
                     List<Map<String, Object>> items = order.getItems().stream().map(i -> {
                         Map<String, Object> m = new LinkedHashMap<>();
@@ -187,6 +191,27 @@ public class AdminOrderRestController {
             "message", "Cập nhật trạng thái thành công", 
             "status", order.getStatus(),
             "statusMessage", getStatusMessage(order.getStatus())
+        );
+    }
+    
+    /**
+     * Cập nhật ghi chú của admin cho đơn hàng
+     * PATCH /api/v1/admin/orders/{id}/admin-note
+     * Body: { "adminNote": "Ghi chú của admin" }
+     */
+    @PatchMapping("/{id}/admin-note")
+    public Map<String, Object> updateAdminNote(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        var order = orderRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
+        
+        String adminNote = request.get("adminNote");
+        order.setAdminNote(adminNote);
+        orderRepository.save(order);
+        
+        return Map.of(
+            "success", true,
+            "message", "Cập nhật ghi chú thành công",
+            "adminNote", adminNote != null ? adminNote : ""
         );
     }
     

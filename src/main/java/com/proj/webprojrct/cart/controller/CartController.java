@@ -58,4 +58,14 @@ public class CartController {
         cartService.removeItem(user, productId, size);
         return Map.of("status", "✅ Xóa sản phẩm khỏi giỏ thành công");
     }
+    
+    // 🔄 4️⃣ Mua lại - Thêm tất cả sản phẩm từ đơn hàng vào giỏ
+    @PostMapping("/reorder/{orderId}")
+    public Object reorderFromOrder(@AuthenticationPrincipal User user, @PathVariable Long orderId) {
+        if (user == null) {
+            return Map.of("status", false, "message", "Chưa đăng nhập.");
+        }
+        var result = cartService.reorderFromOrder(user, orderId);
+        return result;
+    }
 }

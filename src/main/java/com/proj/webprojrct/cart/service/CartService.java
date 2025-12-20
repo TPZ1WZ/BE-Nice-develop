@@ -5,11 +5,17 @@ import com.proj.webprojrct.cart.entity.Cart;
 import com.proj.webprojrct.cart.entity.CartItem;
 import com.proj.webprojrct.cart.repository.CartItemRepository;
 import com.proj.webprojrct.cart.repository.CartRepository;
+import com.proj.webprojrct.order.repository.OrderRepository;
 import com.proj.webprojrct.product.repository.ProductRepository;
 import com.proj.webprojrct.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +23,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional
     public CartResponse getCartByUser(User user) {
@@ -163,6 +170,96 @@ public class CartService {
         cartRepository.save(cart);
         
         System.out.println("💰 Cart totals updated - Total Price: " + totalPrice + ", Total Quantity: " + totalQuantity);
+    }
+    
+    // Mua lại - Thêm tất cả sản phẩm từ đơn hàng vào giỏ
+    @Transactional
+    public Map<String, Object> reorderFromOrder(User user, Long orderId) {
+        System.out.println("🔄 reorderFromOrder called - userId: " + user.getId() + ", orderId: " + orderId);
+        
+        // Kiểm tra đơn hàng có tồn tại và thuộc về user không
+        var order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Bạn không có quyền truy cập đơn hàng này");
+        }
+        
+        // Kiểm tra trạng thái đơn hàng
+        String status = order.getStatus().toUpperCase();
+        if (!status.equals("COMPLETED") && !status.equals("DELIVERED")) {
+            throw new RuntimeException("Chỉ có thể mua lại đơn hàng đã hoàn thành");
+        }
+        
+        // Lấy giỏ hàng
+        Cart cart = getOrCreateCart(user);
+        
+        // Danh sách sản phẩm không thể thêm
+        List<String> unavailableProducts = new ArrayList<>();
+        int successCount = 0;
+        
+        // Thêm từng sản phẩm trong đơn hàng vào giỏ
+        for (var orderItem : order.getItems()) {
+            try {
+                var product = productRepository.findById(orderItem.getProduct().getId())
+                        .orElse(null);
+                
+                if (product == null) {
+                    unavailableProducts.add(orderItem.getProduct().getName() + " (không còn tồn tại)");
+                    continue;
+                }
+                
+                // Kiểm tra tồn kho
+                if (product.getStock() < orderItem.getQuantity()) {
+                    unavailableProducts.add(product.getName() + " (chỉ còn " + product.getStock() + " sản phẩm)");
+                    continue;
+                }
+                
+                // Thêm vào giỏ hàng
+                String size = orderItem.getSize();
+                int quantity = orderItem.getQuantity();
+                
+                cartItemRepository.findByCartIdAndSizeAndProductId(cart.getId(), size, product.getId())
+                        .ifPresentOrElse(cartItem -> {
+                            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                            cartItemRepository.save(cartItem);
+                        }, () -> {
+                            var newCartItem = new CartItem();
+                            newCartItem.setCart(cart);
+                            newCartItem.setProduct(product);
+                            newCartItem.setQuantity(quantity);
+                            newCartItem.setProductPrice(product.getPrice());
+                            newCartItem.setTotalPrice(product.getPrice() * quantity);
+                            newCartItem.setSize(size);
+                            cartItemRepository.save(newCartItem);
+                        });
+                
+                successCount++;
+                
+            } catch (Exception e) {
+                System.err.println("Error adding product to cart: " + e.getMessage());
+                unavailableProducts.add(orderItem.getProduct().getName() + " (lỗi hệ thống)");
+            }
+        }
+        
+        // Cập nhật tổng giá và số lượng
+        updateCartTotals(cart);
+        
+        // Tạo response
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("successCount", successCount);
+        result.put("totalItems", order.getItems().size());
+        
+        if (!unavailableProducts.isEmpty()) {
+            result.put("unavailableProducts", unavailableProducts);
+            result.put("message", successCount + "/" + order.getItems().size() + " sản phẩm đã được thêm vào giỏ hàng");
+        } else {
+            result.put("message", "Đã thêm tất cả sản phẩm vào giỏ hàng thành công");
+        }
+        
+        System.out.println("✅ Reorder completed - Success: " + successCount + "/" + order.getItems().size());
+        return result;
     }
 
 

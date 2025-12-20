@@ -23,4 +23,7 @@ public class PlaceOrderRequest {
     
     @JsonProperty("coupon_code")
     private String couponCode; // Optional
+    
+    @JsonProperty("customer_note")
+    private String customerNote; // Ghi chú của khách hàng
 }

@@ -30,8 +30,8 @@ public class OrderItem extends BaseEntity {
     private Product product;
 
     private Integer quantity;
-    private Double productPrice;
-    private Double totalPrice;
+    private Double productPrice; // Đơn giá tại thời điểm mua
+    private Double totalPrice;   // Thành tiền = productPrice * quantity
     private String size;
 }
 

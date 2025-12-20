@@ -58,7 +58,7 @@ public class OrderService {
         });
     }
 
-    public String placeOrder(User user, String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode) {
+    public String placeOrder(User user, String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode, String customerNote) {
         System.out.println("🔍 [ORDER SERVICE] placeOrder called with:");
         System.out.println("  - User: " + user.getEmail());
         System.out.println("  - Receiver Name: " + receiverName);
@@ -66,6 +66,7 @@ public class OrderService {
         System.out.println("  - Payment Method: " + paymentMethod);
         System.out.println("  - Phone: " + phone);
         System.out.println("  - Coupon Code: " + couponCode);
+        System.out.println("  - Customer Note: " + customerNote);
         
         var cart = cartRepository.findByUserId(user.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng cho người dùng."));
         if (cart.getItems().isEmpty()) {
@@ -94,6 +95,8 @@ public class OrderService {
         order.setQuantity(cart.getTotalQuantity());
         order.setPaymentMethod(paymentMethod);
         order.setShippingAddress(shippingAddress);
+        order.setShippingFee(0.0); // Phí ship cố định 0đ
+        order.setCustomerNote(customerNote);
         
         System.out.println("📝 [ORDER SERVICE] Setting order fields:");
         System.out.println("  - ReceiverName set to: " + order.getReceiverName());
@@ -122,6 +125,7 @@ public class OrderService {
             orderItem.setProduct(item.getProduct());
             orderItem.setQuantity(item.getQuantity());
             orderItem.setProductPrice(item.getProductPrice());
+            orderItem.setTotalPrice(item.getProductPrice() * item.getQuantity()); // Thành tiền = đơn giá * số lượng
             orderItem.setSize(item.getSize());
             orderItems.add(orderItem);
         }
@@ -242,6 +246,7 @@ public class OrderService {
                 .totalAmount(order.getTotalAmount())
                 .totalDiscount(order.getTotalDiscount())
                 .finalAmount(order.getFinalAmount())
+                .shippingFee(order.getShippingFee())
                 .quantity(order.getQuantity())
                 .receiverName(order.getReceiverName())
                 .phone(order.getPhone())
@@ -249,6 +254,8 @@ public class OrderService {
                 .paymentMethod(order.getPaymentMethod())
                 .shippingAddress(order.getShippingAddress())
                 .txnId(order.getTxnId())
+                .customerNote(order.getCustomerNote())
+                .adminNote(order.getAdminNote())
                 .items(itemDTOs)
                 .createdAt(order.getCreatedAt())
                 .coupon(couponDTO) // gán coupon nếu có
