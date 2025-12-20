@@ -72,6 +72,9 @@ public class CartService {
                     cartItemRepository.save(newCartItem);
                     System.out.println("✅ Cart item saved successfully");
                 });
+        
+        // Cập nhật tổng giá và số lượng của cart
+        updateCartTotals(cart);
     }
     
     private synchronized Cart getOrCreateCart(User user) {
@@ -123,6 +126,9 @@ public class CartService {
         cartItem.setQuantity(newQuantity);
         cartItem.setTotalPrice(cartItem.getProductPrice() * newQuantity);
         cartItemRepository.save(cartItem);
+        
+        // Cập nhật tổng giá và số lượng của cart
+        updateCartTotals(cart);
     }
 
     // Xóa sản phẩm khỏi giỏ hàng
@@ -135,11 +141,28 @@ public class CartService {
 
         cartItemRepository.delete(cartItem);
 
-        if (cart.getItems().isEmpty()) {
-            cart.setTotalPrice(0.0);
-            cart.setTotalQuantity(0);
-            cartRepository.save(cart);
-        }
+        // Cập nhật tổng giá và số lượng của cart
+        updateCartTotals(cart);
+    }
+    
+    // Helper method để tính toán lại tổng giá và số lượng
+    private void updateCartTotals(Cart cart) {
+        // Refresh cart items từ database
+        var items = cartItemRepository.findByCartId(cart.getId());
+        
+        double totalPrice = items.stream()
+                .mapToDouble(CartItem::getTotalPrice)
+                .sum();
+        
+        int totalQuantity = items.stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+        
+        cart.setTotalPrice(totalPrice);
+        cart.setTotalQuantity(totalQuantity);
+        cartRepository.save(cart);
+        
+        System.out.println("💰 Cart totals updated - Total Price: " + totalPrice + ", Total Quantity: " + totalQuantity);
     }
 
 

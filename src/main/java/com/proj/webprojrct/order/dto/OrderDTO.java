@@ -16,6 +16,7 @@ public class OrderDTO {
     private Double totalDiscount;
     private Double finalAmount;
     private Integer quantity;
+    private String receiverName;  // Tên người nhận hàng
     private String phone;
     private String status;
     private String paymentMethod;

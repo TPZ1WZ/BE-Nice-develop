@@ -27,6 +27,7 @@ public class Order extends BaseEntity {
     private Double totalDiscount;
     private Double finalAmount;
     private Integer quantity;
+    private String receiverName; // Tên người nhận hàng
     private String phone;
     private String status; // pending, confirmed, shipping, completed, canceled
     private String paymentMethod; // COD, Momo, VNPay, PayPal

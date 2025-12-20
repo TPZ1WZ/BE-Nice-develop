@@ -39,6 +39,7 @@ public class AdminOrderRestController {
             dto.put("id", order.getId());
             dto.put("userName", order.getUser() != null ? order.getUser().getFullName() : "Khách lẻ");
             dto.put("email", order.getUser() != null ? order.getUser().getEmail() : "");
+            dto.put("receiverName", order.getReceiverName());  // Tên người nhận hàng
             dto.put("phone", order.getPhone() != null ? order.getPhone() : "");
             dto.put("shippingAddress", order.getShippingAddress() != null ? order.getShippingAddress() : "");
             dto.put("paymentMethod", order.getPaymentMethod() != null ? order.getPaymentMethod() : "COD");
@@ -77,6 +78,7 @@ public class AdminOrderRestController {
                     dto.put("id", order.getId());
                     dto.put("userName", order.getUser() != null ? order.getUser().getFullName() : "Khách lẻ");
                     dto.put("email", order.getUser() != null ? order.getUser().getEmail() : "");
+                    dto.put("receiverName", order.getReceiverName());  // Tên người nhận hàng
                     dto.put("phone", order.getPhone());
                     dto.put("shippingAddress", order.getShippingAddress());
                     dto.put("paymentMethod", order.getPaymentMethod());
