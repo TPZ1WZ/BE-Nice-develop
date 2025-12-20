@@ -21,4 +21,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
            "GROUP BY oi.product.id, oi.product.name " +
            "ORDER BY totalSold DESC")
     List<Object[]> findTopSellingProducts();
+    
+    // Kiểm tra sản phẩm có trong đơn hàng không
+    boolean existsByProductId(Long productId);
 }

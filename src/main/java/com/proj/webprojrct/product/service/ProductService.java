@@ -134,6 +134,13 @@ public class ProductService {
                         filter.getMaxPrice(),
                         filter.getCategoryIds(),
                         pageable);
+            } else {
+                productPage = productRepository.findWithFilters(
+                        filter.getName(),
+                        filter.getMinPrice(),
+                        filter.getMaxPrice(),
+                        null,
+                        pageable);
             }
 
             // Convert sang DTO
@@ -173,11 +180,25 @@ public class ProductService {
      * Lấy sản phẩm theo bộ lọc không phân trang
      */
     public List<ProductListDto> getProductsWithFiltersNoPage(ProductFilterDto filter) {
-        List<Product> products = productRepository.findWithFilters(
-                filter.getName(),
-                filter.getMinPrice(),
-                filter.getMaxPrice(),
-                0L);
+        List<Product> products;
+
+        // Nếu có categoryIds, filter theo category
+        if (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty()) {
+            // Dùng query với categoryIds
+            Long categoryId = filter.getCategoryIds().get(0);
+            products = productRepository.findWithFilters(
+                    filter.getName(),
+                    filter.getMinPrice(),
+                    filter.getMaxPrice(),
+                    categoryId);
+        } else {
+            // Không có category filter, lấy tất cả
+            products = productRepository.findWithFilters(
+                    filter.getName(),
+                    filter.getMinPrice(),
+                    filter.getMaxPrice(),
+                    null);
+        }
 
         return products.stream()
                 .map(this::convertToListDto)

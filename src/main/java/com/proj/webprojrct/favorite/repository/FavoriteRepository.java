@@ -29,4 +29,13 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     // Lấy danh sách product IDs mà user đã yêu thích
     @Query("SELECT f.product.id FROM Favorite f WHERE f.user.id = :userId")
     List<Long> findProductIdsByUserId(@Param("userId") Long userId);
+    
+    // Tìm tất cả favorites theo product ID
+    List<Favorite> findByProductId(Long productId);
+    
+    // Xóa tất cả favorites của một sản phẩm
+    void deleteByProductId(Long productId);
+    
+    // Đếm số favorites của sản phẩm
+    long countByProductId(Long productId);
 }

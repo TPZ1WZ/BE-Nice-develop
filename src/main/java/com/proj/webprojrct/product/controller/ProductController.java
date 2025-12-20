@@ -72,6 +72,11 @@ public class ProductController {
         filter.setName(name);
         filter.setMinPrice(minPrice);
         filter.setMaxPrice(maxPrice);
+        
+        // Thêm categoryId vào filter
+        if (categoryId != null) {
+            filter.setCategoryIds(java.util.Arrays.asList(categoryId));
+        }
 
         List<ProductListDto> result = productService.getProductsWithFiltersNoPage(filter);
         return ResponseEntity.ok(result);

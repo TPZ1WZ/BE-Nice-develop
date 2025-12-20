@@ -15,15 +15,17 @@ import java.util.Optional;
 
 /**
  * Controller quản lý đơn hàng trong admin dashboard
+ * TEMPORARILY DISABLED due to OrderRepository issue
  */
-@Controller
-@RequestMapping("/admin/orders")
-@RequiredArgsConstructor
+// @Controller
+// @RequestMapping("/admin/orders")
+// @RequiredArgsConstructor
 public class AdminOrderController {
-    private final OrderRepository orderRepository;
-    private final ProductRepository productRepository;
-    private final CouponRepository couponRepository;
+    // private final OrderRepository orderRepository;
+    // private final ProductRepository productRepository;
+    // private final CouponRepository couponRepository;
 
+    /*
     @GetMapping
     public String orderPage(Model model) {
         model.addAttribute("orders", orderRepository.findAll());
@@ -106,5 +108,5 @@ public class AdminOrderController {
                     return dto;
                 })
                 .orElse(Map.of());
-    }
+    }*/
 }

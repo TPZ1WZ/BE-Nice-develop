@@ -3,13 +3,18 @@ package com.proj.webprojrct.admin.controller;
 import com.proj.webprojrct.admin.dto.AdminProductDTO;
 import com.proj.webprojrct.admin.dto.ProductStatsDTO;
 import com.proj.webprojrct.admin.repository.AdminProductRepository;
+import com.proj.webprojrct.cart.repository.CartItemRepository;
 import com.proj.webprojrct.category.entity.Category;
 import com.proj.webprojrct.category.repository.CategoryRepository;
+import com.proj.webprojrct.favorite.repository.FavoriteRepository;
+import com.proj.webprojrct.order.repository.OrderItemRepository;
 import com.proj.webprojrct.product.entity.Product;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Controller quản lý sản phẩm trong admin dashboard
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
@@ -25,6 +31,9 @@ public class AdminProductController {
 
     private final AdminProductRepository adminProductRepository;
     private final CategoryRepository categoryRepository;
+    private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final FavoriteRepository favoriteRepository;
 
     // Helper methods để giảm code trùng lặp
     private <T> ResponseEntity<T> ok(T data) {
@@ -58,6 +67,7 @@ public class AdminProductController {
     /**
      * Lấy danh sách tất cả sản phẩm với search query (Android app cần format này)
      * GET /api/admin/products?search=nike
+     * CHỈ LẤY SẢN PHẨM CHƯƠ XÓA (isDelete = false)
      */
     @GetMapping
     public ResponseEntity<List<AdminProductDTO>> getAllProducts(
@@ -65,13 +75,13 @@ public class AdminProductController {
         
         List<Product> products;
         if (search != null && !search.trim().isEmpty()) {
-            // Search by name
-            Page<Product> productPage = adminProductRepository.findByNameContainingIgnoreCase(
+            // Search by name - CHỈ LẤY SẢN PHẨM CHƯƠ XÓA
+            Page<Product> productPage = adminProductRepository.findByNameContainingIgnoreCaseAndIsDeleteFalse(
                 search.trim(), org.springframework.data.domain.PageRequest.of(0, 100));
             products = productPage.getContent();
         } else {
-            // Get all products
-            products = adminProductRepository.findAll();
+            // Get all products - CHỈ LẤY SẢN PHẨM CHƯƠ XÓA
+            products = adminProductRepository.findByIsDeleteFalse();
         }
         
         // Convert to DTO
@@ -181,16 +191,78 @@ public class AdminProductController {
     }
 
     /**
-     * Xóa sản phẩm
+     * Xóa sản phẩm thông minh:
+     * - Xóa khỏi giỏ hàng (cart_items)
+     * - Xóa khỏi danh sách yêu thích (favorites)
+     * - Soft delete sản phẩm (set isDelete = true) để giữ lịch sử đơn hàng
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    @Transactional
+    public ResponseEntity<java.util.Map<String, Object>> deleteProduct(@PathVariable Long id) {
         return adminProductRepository.findById(id)
                 .map(product -> {
-                    adminProductRepository.delete(product);
-                    return ResponseEntity.ok().<Void>build();
+                    try {
+                        long cartItemsRemoved = 0;
+                        long favoritesRemoved = 0;
+                        boolean hasOrders = false;
+                        
+                        // 1. Kiểm tra xem có trong đơn hàng không (dùng query hiệu quả)
+                        hasOrders = orderItemRepository.existsByProductId(id);
+                        log.info("Sản phẩm ID {} có trong đơn hàng: {}", id, hasOrders);
+                        
+                        // 2. Đếm và xóa khỏi giỏ hàng (dùng query hiệu quả)
+                        cartItemsRemoved = cartItemRepository.countByProductId(id);
+                        if (cartItemsRemoved > 0) {
+                            cartItemRepository.deleteByProductId(id);
+                            log.info("Đã xóa {} mục trong giỏ hàng cho sản phẩm ID: {}", cartItemsRemoved, id);
+                        }
+                        
+                        // 3. Đếm và xóa khỏi danh sách yêu thích (dùng query hiệu quả)
+                        favoritesRemoved = favoriteRepository.countByProductId(id);
+                        if (favoritesRemoved > 0) {
+                            favoriteRepository.deleteByProductId(id);
+                            log.info("Đã xóa {} mục yêu thích cho sản phẩm ID: {}", favoritesRemoved, id);
+                        }
+                        
+                        // 4. Soft delete hoặc hard delete
+                        if (hasOrders) {
+                            // Nếu có trong đơn hàng, chỉ soft delete
+                            product.setDelete(true);
+                            adminProductRepository.save(product);
+                            log.info("Soft delete sản phẩm ID: {} (có trong đơn hàng)", id);
+                        } else {
+                            // Nếu không có trong đơn hàng, có thể hard delete
+                            adminProductRepository.delete(product);
+                            log.info("Hard delete sản phẩm ID: {}", id);
+                        }
+                        
+                        // Trả về thông tin chi tiết
+                        java.util.Map<String, Object> successResponse = java.util.Map.of(
+                            "success", true,
+                            "message", "Đã xóa sản phẩm thành công",
+                            "details", java.util.Map.of(
+                                "cartItemsRemoved", (int)cartItemsRemoved,
+                                "favoritesRemoved", (int)favoritesRemoved,
+                                "softDelete", hasOrders
+                            )
+                        );
+                        return ResponseEntity.ok(successResponse);
+                    } catch (Exception e) {
+                        log.error("Lỗi khi xóa sản phẩm ID: {}", id, e);
+                        java.util.Map<String, Object> errorResponse = java.util.Map.of(
+                            "success", false,
+                            "message", "Lỗi khi xóa sản phẩm: " + e.getMessage()
+                        );
+                        return ResponseEntity.status(500).body(errorResponse);
+                    }
                 })
-                .orElse(notFound());
+                .orElseGet(() -> {
+                    java.util.Map<String, Object> notFoundResponse = java.util.Map.of(
+                        "success", false,
+                        "message", "Không tìm thấy sản phẩm"
+                    );
+                    return ResponseEntity.status(404).body(notFoundResponse);
+                });
     }
 
     /**
@@ -199,7 +271,8 @@ public class AdminProductController {
      */
     @GetMapping("/stats")
     public ResponseEntity<ProductStatsDTO> getProductStats() {
-        List<Product> allProducts = adminProductRepository.findAll();
+        // CHỈ ĐẾM SẢN PHẨM CHƯƠ XÓA
+        List<Product> allProducts = adminProductRepository.findByIsDeleteFalse();
         
         int total = allProducts.size();
         int outOfStock = (int) allProducts.stream()

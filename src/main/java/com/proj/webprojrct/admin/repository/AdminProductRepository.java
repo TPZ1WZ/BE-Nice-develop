@@ -16,8 +16,14 @@ public interface AdminProductRepository extends JpaRepository<Product, Long> {
 
     // Tìm tất cả sản phẩm với phân trang
     Page<Product> findAll(Pageable pageable);
+    
+    // Tìm tất cả sản phẩm CHƯƠ XÓA (isDelete = false)
+    List<Product> findByIsDeleteFalse();
+    
+    // Tìm kiếm sản phẩm theo tên CHƯƠ XÓA
+    Page<Product> findByNameContainingIgnoreCaseAndIsDeleteFalse(String name, Pageable pageable);
 
-    // Tìm kiếm sản phẩm theo tên
+    // Tìm kiếm sản phẩm theo tên (có thể lấy cả đã xóa)
     Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     // Tìm kiếm sản phẩm theo mô tả

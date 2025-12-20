@@ -8,4 +8,13 @@ import java.util.Optional;
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     Optional<CartItem> findByCartIdAndSizeAndProductId(Long cartId, String size, Long productId);
+    
+    // Tìm tất cả cart items theo product ID
+    java.util.List<CartItem> findByProductId(Long productId);
+    
+    // Xóa tất cả cart items của một sản phẩm
+    void deleteByProductId(Long productId);
+    
+    // Đếm số cart items của sản phẩm
+    long countByProductId(Long productId);
 }
