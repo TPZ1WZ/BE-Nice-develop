@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,21 +56,34 @@ public class ReviewService {
             }
         }
         
-        // Check if user already reviewed this product
-        if (reviewRepository.existsByUserAndProduct(user, product)) {
-            throw new RuntimeException("You have already reviewed this product");
+        // Check if user already has an APPROVED review for this product
+        // If only pending review exists, allow to update it
+        Optional<Review> existingReview = reviewRepository.findByUserAndProduct(user, product);
+        if (existingReview.isPresent() && existingReview.get().getApproved()) {
+            throw new RuntimeException("You have already reviewed this product and it has been approved");
         }
         
-        // Create review
-        Review review = Review.builder()
-            .user(user)
-            .product(product)
-            .rating(request.getRating())
-            .comment(request.getComment())
-            .title(request.getTitle())
-            .images(request.getImages())
-            .approved(false) // Requires admin approval
-            .build();
+        // If pending review exists, update it instead of creating new one
+        Review review;
+        if (existingReview.isPresent() && !existingReview.get().getApproved()) {
+            review = existingReview.get();
+            review.setRating(request.getRating());
+            review.setComment(request.getComment());
+            review.setTitle(request.getTitle());
+            review.setImages(request.getImages());
+            review.setApproved(false); // Reset to pending for re-approval
+        } else {
+            // Create new review
+            review = Review.builder()
+                .user(user)
+                .product(product)
+                .rating(request.getRating())
+                .comment(request.getComment())
+                .title(request.getTitle())
+                .images(request.getImages())
+                .approved(false) // Requires admin approval
+                .build();
+        }
         
         Review savedReview = reviewRepository.save(review);
         
@@ -359,5 +373,135 @@ public class ReviewService {
             .createdAt(reply.getCreatedAt())
             .isAdminReply(reply.getIsAdminReply())
             .build();
+    }
+
+    // ==================== ADMIN METHODS ====================
+
+    /**
+     * Admin: Get all reviews with filters
+     */
+    public java.util.Map<String, Object> getAllReviewsForAdmin(int page, int size, String status, Integer rating, Long productId) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Review> reviewPage;
+
+        if (productId != null) {
+            if (rating != null) {
+                reviewPage = reviewRepository.findByProductIdAndRating(productId, rating, pageable);
+            } else {
+                reviewPage = reviewRepository.findByProductId(productId, pageable);
+            }
+        } else if (rating != null) {
+            reviewPage = reviewRepository.findByRating(rating, pageable);
+        } else if ("pending".equalsIgnoreCase(status)) {
+            reviewPage = reviewRepository.findByApprovedFalse(pageable);
+        } else if ("approved".equalsIgnoreCase(status)) {
+            reviewPage = reviewRepository.findByApprovedTrue(pageable);
+        } else {
+            reviewPage = reviewRepository.findAll(pageable);
+        }
+
+        List<ReviewDTO> reviews = reviewPage.getContent().stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+
+        return java.util.Map.of(
+            "reviews", reviews,
+            "totalElements", reviewPage.getTotalElements(),
+            "totalPages", reviewPage.getTotalPages(),
+            "currentPage", page,
+            "pageSize", size
+        );
+    }
+
+    /**
+     * Admin: Get review statistics
+     */
+    public java.util.Map<String, Object> getReviewStatistics() {
+        long totalReviews = reviewRepository.count();
+        long approvedReviews = reviewRepository.countByApprovedTrue();
+        long pendingReviews = reviewRepository.countByApprovedFalse();
+        
+        List<Object[]> ratingDistribution = reviewRepository.findRatingDistribution();
+        
+        return java.util.Map.of(
+            "totalReviews", totalReviews,
+            "approvedReviews", approvedReviews,
+            "pendingReviews", pendingReviews,
+            "ratingDistribution", ratingDistribution
+        );
+    }
+
+    /**
+     * Admin: Reject review
+     */
+    public void rejectReview(Long reviewId, String reason) {
+        Review review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new RuntimeException("Review not found"));
+        
+        // Delete review if rejected
+        reviewRepository.delete(review);
+        
+        System.out.println("❌ Review #" + reviewId + " rejected by admin. Reason: " + reason);
+    }
+
+    /**
+     * Admin: Delete review
+     */
+    public void deleteReviewByAdmin(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new RuntimeException("Review not found"));
+        
+        reviewRepository.delete(review);
+        System.out.println("🗑️ Review #" + reviewId + " deleted by admin");
+    }
+
+    /**
+     * Admin: Add admin reply to review
+     */
+    public void addAdminReply(Long reviewId, String content) {
+        Review review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new RuntimeException("Review not found"));
+        
+        ReviewReply reply = ReviewReply.builder()
+            .review(review)
+            .user(null) // Admin reply doesn't need user
+            .comment(content)
+            .isAdminReply(true)
+            .build();
+        
+        reviewReplyRepository.save(reply);
+        System.out.println("💬 Admin reply added to review #" + reviewId);
+    }
+
+    /**
+     * Admin: Bulk approve reviews
+     */
+    public int bulkApproveReviews(List<Long> reviewIds) {
+        int count = 0;
+        for (Long reviewId : reviewIds) {
+            try {
+                approveReview(reviewId);
+                count++;
+            } catch (Exception e) {
+                System.err.println("Failed to approve review #" + reviewId + ": " + e.getMessage());
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Admin: Bulk delete reviews
+     */
+    public int bulkDeleteReviews(List<Long> reviewIds) {
+        int count = 0;
+        for (Long reviewId : reviewIds) {
+            try {
+                deleteReviewByAdmin(reviewId);
+                count++;
+            } catch (Exception e) {
+                System.err.println("Failed to delete review #" + reviewId + ": " + e.getMessage());
+            }
+        }
+        return count;
     }
 }

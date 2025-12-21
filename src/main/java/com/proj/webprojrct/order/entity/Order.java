@@ -26,12 +26,20 @@ public class Order extends BaseEntity {
     private Double totalAmount;
     private Double totalDiscount;
     private Double finalAmount;
+    private Double shippingFee = 0.0; // Phí ship cố định 0đ (sẽ phát triển sau)
     private Integer quantity;
+    private String receiverName; // Tên người nhận hàng
     private String phone;
     private String status; // pending, confirmed, shipping, completed, canceled
     private String paymentMethod; // COD, Momo, VNPay, PayPal
     private String shippingAddress;
     private String txnId;       // reference id for payment gateway: vnpay
+    
+    @Column(length = 1000)
+    private String customerNote; // Ghi chú của khách hàng
+    
+    @Column(length = 1000)
+    private String adminNote;    // Ghi chú của admin
 
     @ManyToOne
     @JoinColumn(name = "coupon_id")

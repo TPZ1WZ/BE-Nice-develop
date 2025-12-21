@@ -32,12 +32,22 @@ public class OrderController {
             @AuthenticationPrincipal User user,
             @RequestBody PlaceOrderRequest request) {
         try {
+            System.out.println("📦 [ORDER] Received order request:");
+            System.out.println("  - Receiver Name: " + request.getReceiverName());
+            System.out.println("  - Shipping Address: " + request.getShippingAddress());
+            System.out.println("  - Payment Method: " + request.getPaymentMethod());
+            System.out.println("  - Phone: " + request.getPhone());
+            System.out.println("  - Coupon Code: " + request.getCouponCode());
+            System.out.println("  - Customer Note: " + request.getCustomerNote());
+            
             String result = orderService.placeOrder(
                 user, 
+                request.getReceiverName(),
                 request.getShippingAddress(), 
                 request.getPaymentMethod(), 
                 request.getPhone(), 
-                request.getCouponCode()
+                request.getCouponCode(),
+                request.getCustomerNote()
             );
             
             if (result != null && result.startsWith("http")) {

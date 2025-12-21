@@ -58,7 +58,16 @@ public class OrderService {
         });
     }
 
-    public String placeOrder(User user, String shippingAddress, String paymentMethod, String phone, String couponCode) {
+    public String placeOrder(User user, String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode, String customerNote) {
+        System.out.println("🔍 [ORDER SERVICE] placeOrder called with:");
+        System.out.println("  - User: " + user.getEmail());
+        System.out.println("  - Receiver Name: " + receiverName);
+        System.out.println("  - Shipping Address: " + shippingAddress);
+        System.out.println("  - Payment Method: " + paymentMethod);
+        System.out.println("  - Phone: " + phone);
+        System.out.println("  - Coupon Code: " + couponCode);
+        System.out.println("  - Customer Note: " + customerNote);
+        
         var cart = cartRepository.findByUserId(user.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng cho người dùng."));
         if (cart.getItems().isEmpty()) {
             throw new RuntimeException("Giỏ hàng trống, không thể đặt hàng.");
@@ -81,10 +90,20 @@ public class OrderService {
         var order = new Order();
         order.setUser(user);
         order.setStatus("PENDING");
+        order.setReceiverName(receiverName);
         order.setPhone(phone);
         order.setQuantity(cart.getTotalQuantity());
         order.setPaymentMethod(paymentMethod);
         order.setShippingAddress(shippingAddress);
+        order.setShippingFee(0.0); // Phí ship cố định 0đ
+        order.setCustomerNote(customerNote);
+        
+        System.out.println("📝 [ORDER SERVICE] Setting order fields:");
+        System.out.println("  - ReceiverName set to: " + order.getReceiverName());
+        System.out.println("  - ShippingAddress set to: " + order.getShippingAddress());
+        System.out.println("  - PaymentMethod set to: " + order.getPaymentMethod());
+        System.out.println("  - Phone set to: " + order.getPhone());
+        
         order.setCoupon(couponItem);
         double totalAfterDiscount = totalBeforeDiscount;
         double bonusDiscount = 0.0;
@@ -106,6 +125,7 @@ public class OrderService {
             orderItem.setProduct(item.getProduct());
             orderItem.setQuantity(item.getQuantity());
             orderItem.setProductPrice(item.getProductPrice());
+            orderItem.setTotalPrice(item.getProductPrice() * item.getQuantity()); // Thành tiền = đơn giá * số lượng
             orderItem.setSize(item.getSize());
             orderItems.add(orderItem);
         }
@@ -120,7 +140,25 @@ public class OrderService {
             });
         });
         order.setItems(orderItems);
+        
+        System.out.println("💾 [ORDER SERVICE] Saving order to database...");
+        System.out.println("  - Before save - ReceiverName: " + order.getReceiverName());
+        System.out.println("  - Before save - ShippingAddress: " + order.getShippingAddress());
+        System.out.println("  - Before save - PaymentMethod: " + order.getPaymentMethod());
+        System.out.println("  - Before save - Phone: " + order.getPhone());
+        System.out.println("  - Before save - FinalAmount: " + order.getFinalAmount());
+        System.out.println("  - Before save - Quantity: " + order.getQuantity());
+        
         var newOrder = orderRepository.save(order);
+        
+        System.out.println("✅ [ORDER SERVICE] Order saved with ID: " + newOrder.getId());
+        System.out.println("  - After save - ReceiverName: " + newOrder.getReceiverName());
+        System.out.println("  - After save - ShippingAddress: " + newOrder.getShippingAddress());
+        System.out.println("  - After save - PaymentMethod: " + newOrder.getPaymentMethod());
+        System.out.println("  - After save - Phone: " + newOrder.getPhone());
+        System.out.println("  - After save - FinalAmount: " + newOrder.getFinalAmount());
+        System.out.println("  - After save - Quantity: " + newOrder.getQuantity());
+        
         cartRepository.delete(cart);
 
         if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
@@ -135,7 +173,9 @@ public class OrderService {
 
     public OrderDTO toOrderDTO(Order order, User user) {
         List<OrderItemDTO> itemDTOs = order.getItems().stream().map(item -> {
-            boolean reviewed = reviewRepository.existsByUserAndProduct(user, item.getProduct());
+            // Chỉ đánh dấu reviewed=true nếu đã có review được approve
+            // Nếu chỉ có review pending, vẫn cho phép edit/submit lại
+            boolean reviewed = reviewRepository.existsByUserAndProductAndApproved(user, item.getProduct(), true);
             var p = item.getProduct();
             var productDTO = ProductOrderDTO.builder()
                     .id(p.getId())
@@ -194,6 +234,13 @@ public class OrderService {
                     .email(u.getEmail())
                     .phone(u.getPhone())
                     .build();
+            System.out.println("👤 [ORDER DTO] User info mapped:");
+            System.out.println("  - ID: " + userDTO.getId());
+            System.out.println("  - Full Name: " + userDTO.getFullName());
+            System.out.println("  - Email: " + userDTO.getEmail());
+            System.out.println("  - Phone: " + userDTO.getPhone());
+        } else {
+            System.out.println("⚠️ [ORDER DTO] Order has no user!");
         }
 
         return OrderDTO.builder()
@@ -201,12 +248,16 @@ public class OrderService {
                 .totalAmount(order.getTotalAmount())
                 .totalDiscount(order.getTotalDiscount())
                 .finalAmount(order.getFinalAmount())
+                .shippingFee(order.getShippingFee())
                 .quantity(order.getQuantity())
+                .receiverName(order.getReceiverName())
                 .phone(order.getPhone())
                 .status(order.getStatus())
                 .paymentMethod(order.getPaymentMethod())
                 .shippingAddress(order.getShippingAddress())
                 .txnId(order.getTxnId())
+                .customerNote(order.getCustomerNote())
+                .adminNote(order.getAdminNote())
                 .items(itemDTOs)
                 .createdAt(order.getCreatedAt())
                 .coupon(couponDTO) // gán coupon nếu có
