@@ -13,6 +13,7 @@ import com.proj.webprojrct.promotion.entity.Coupon;
 import com.proj.webprojrct.promotion.repository.CouponRepository;
 import com.proj.webprojrct.review.repository.ReviewRepository;
 import com.proj.webprojrct.user.entity.User;
+import com.proj.webprojrct.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final PaymentService paymentService;
     private final ReviewRepository reviewRepository;
+    private final NotificationService notificationService;
 
     public void cancelOrder(User user, Long orderId) {
         var order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng."));
@@ -45,6 +47,14 @@ public class OrderService {
         }
         order.setStatus("CANCELED");
         orderRepository.save(order);
+        
+        // Tạo thông báo hủy đơn hàng
+        notificationService.createOrderNotification(
+            user.getId(),
+            orderId,
+            "CANCELED",
+            "Đơn hàng #" + orderId + " đã bị hủy"
+        );
 
         for (var item : order.getItems()) {
             productRepository.findById(item.getProduct().getId()).ifPresent(pt -> {
@@ -159,6 +169,14 @@ public class OrderService {
         System.out.println("  - After save - Phone: " + newOrder.getPhone());
         System.out.println("  - After save - FinalAmount: " + newOrder.getFinalAmount());
         System.out.println("  - After save - Quantity: " + newOrder.getQuantity());
+        
+        // Tạo thông báo đơn hàng mới
+        notificationService.createOrderNotification(
+            user.getId(),
+            newOrder.getId(),
+            "PENDING",
+            "Đơn hàng #" + newOrder.getId() + " đã được tạo thành công. Đang chờ xác nhận."
+        );
         
         cartRepository.delete(cart);
 

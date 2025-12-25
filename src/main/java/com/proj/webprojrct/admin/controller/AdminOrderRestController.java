@@ -3,6 +3,7 @@ package com.proj.webprojrct.admin.controller;
 import com.proj.webprojrct.order.repository.OrderRepository;
 import com.proj.webprojrct.product.repository.ProductRepository;
 import com.proj.webprojrct.promotion.repository.CouponRepository;
+import com.proj.webprojrct.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ public class AdminOrderRestController {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final CouponRepository couponRepository;
+    private final NotificationService notificationService;
 
     /**
      * Lấy danh sách đơn hàng với filter theo status
@@ -199,6 +201,12 @@ public class AdminOrderRestController {
                     return Map.of("success", false, "message", "Chỉ có thể xác nhận đơn hàng PENDING");
                 }
                 order.setStatus("CONFIRMED");
+                notificationService.createOrderNotification(
+                    order.getUser().getId(),
+                    order.getId(),
+                    "CONFIRMED",
+                    "Đơn hàng #" + order.getId() + " đã được xác nhận. Chúng tôi đang chuẩn bị hàng cho bạn."
+                );
                 break;
                 
             case "SHIPPING":
@@ -206,6 +214,12 @@ public class AdminOrderRestController {
                     return Map.of("success", false, "message", "Chỉ có thể chuyển sang SHIPPING từ CONFIRMED");
                 }
                 order.setStatus("SHIPPING");
+                notificationService.createOrderNotification(
+                    order.getUser().getId(),
+                    order.getId(),
+                    "SHIPPING",
+                    "Đơn hàng #" + order.getId() + " đang được giao đến bạn. Vui lòng chuẩn bị nhận hàng."
+                );
                 break;
                 
             case "COMPLETED":
@@ -213,6 +227,12 @@ public class AdminOrderRestController {
                     return Map.of("success", false, "message", "Chỉ có thể hoàn tất đơn hàng đang SHIPPING");
                 }
                 order.setStatus("COMPLETED");
+                notificationService.createOrderNotification(
+                    order.getUser().getId(),
+                    order.getId(),
+                    "COMPLETED",
+                    "Đơn hàng #" + order.getId() + " đã giao thành công! Cảm ơn bạn đã mua hàng tại Nike Store."
+                );
                 break;
                 
             case "CANCELED":
@@ -220,6 +240,13 @@ public class AdminOrderRestController {
                     return Map.of("success", false, "message", "Không thể hủy đơn hàng đã hoàn tất");
                 }
                 order.setStatus("CANCELED");
+                
+                notificationService.createOrderNotification(
+                    order.getUser().getId(),
+                    order.getId(),
+                    "CANCELED",
+                    "Đơn hàng #" + order.getId() + " đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ hỗ trợ."
+                );
                 
                 // Hoàn lại stock khi hủy đơn
                 order.getItems().forEach(oi -> {

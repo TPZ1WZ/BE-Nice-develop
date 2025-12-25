@@ -10,6 +10,8 @@ import com.proj.webprojrct.promotion.entity.Coupon;
 import com.proj.webprojrct.promotion.mapper.CouponMapper;
 import com.proj.webprojrct.promotion.repository.CouponRepository;
 import com.proj.webprojrct.promotion.service.CouponService;
+import com.proj.webprojrct.notification.service.NotificationService;
+import com.proj.webprojrct.notification.entity.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ public class CouponServiceImpl implements CouponService {
 
     private final CouponRepository couponRepository;
     private final CouponMapper couponMapper;
+    private final NotificationService notificationService;
 
     @Override
     public CouponResponse createCoupon(CouponCreateRequest request) {
@@ -43,6 +46,31 @@ public class CouponServiceImpl implements CouponService {
         coupon = couponRepository.save(coupon);
         
         log.info("Created coupon successfully with ID: {}", coupon.getId());
+        
+        // Gửi thông báo broadcast cho tất cả users
+        try {
+            String message = String.format("%s. HSD: %s", 
+                request.getDescription() != null ? request.getDescription() : request.getName(),
+                request.getEndDate() != null ? request.getEndDate().toString() : "Không giới hạn"
+            );
+            
+            java.util.Map<String, Object> data = new java.util.HashMap<>();
+            data.put("couponCode", coupon.getCode());
+            data.put("discount", request.getDiscountValue());
+            data.put("discountType", request.getDiscountType());
+            data.put("endDate", request.getEndDate());
+            
+            notificationService.broadcastNotification(
+                NotificationType.COUPON,
+                "Mã giảm giá mới: " + coupon.getCode(),
+                message,
+                data
+            );
+            log.info("Broadcast notification sent for new coupon: {}", coupon.getCode());
+        } catch (Exception e) {
+            log.error("Failed to send coupon notification: {}", e.getMessage());
+        }
+        
         return couponMapper.toResponse(coupon);
     }
 

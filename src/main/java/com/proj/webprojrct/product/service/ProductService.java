@@ -119,15 +119,28 @@ public class ProductService {
             Page<Product> productPage = Page.empty(pageable);
 
             // Kiểm tra xem có filter nào không
+            boolean hasAdvancedFilters = (filter.getSizes() != null && !filter.getSizes().isEmpty());
+            
             boolean hasFilters = (filter.getName() != null && !filter.getName().trim().isEmpty()) ||
                     filter.getMinPrice() != null ||
                     filter.getMaxPrice() != null ||
-                    (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty());
+                    (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty()) ||
+                    hasAdvancedFilters;
 
             if (!hasFilters) {
-                // Nếu không có filter nào, sử dụng method đơn giản như featured products
+                // Nếu không có filter nào, lấy tất cả sản phẩm
                 productPage = productRepository.findByIsDelete(false, pageable);
+            } else if (hasAdvancedFilters) {
+                // Dùng advanced filter nếu có sizes
+                productPage = productRepository.findWithAdvancedFilters(
+                        filter.getName(),
+                        filter.getMinPrice(),
+                        filter.getMaxPrice(),
+                        filter.getCategoryIds(),
+                        filter.getSizes(),
+                        pageable);
             } else if (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty()) {
+                // Filter theo categories
                 productPage = productRepository.findWithFiltersAndCategories(
                         filter.getName(),
                         filter.getMinPrice(),
@@ -135,6 +148,7 @@ public class ProductService {
                         filter.getCategoryIds(),
                         pageable);
             } else {
+                // Filter đơn giản
                 productPage = productRepository.findWithFilters(
                         filter.getName(),
                         filter.getMinPrice(),
@@ -258,7 +272,8 @@ public class ProductService {
                 product.getName(),
                 product.getPrice(),
                 thumbnail,
-                product.getSizes());
+                product.getSizes(),
+                product.getStock());
     }
 
     public Product getProductById(Long id) {

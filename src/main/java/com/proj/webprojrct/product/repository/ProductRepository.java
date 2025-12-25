@@ -107,6 +107,22 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                      @Param("categoryIds") List<Long> categoryIds,
                      Pageable pageable);
 
+       // ✨ Bộ lọc nâng cao với size và danh mục (dùng native query cho array operations)
+       @Query(value = "SELECT DISTINCT p.* FROM product p WHERE p.is_delete = false " +
+                     "AND (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+                     "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+                     "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
+                     "AND (:categoryIds IS NULL OR p.category_id IN :categoryIds) " +
+                     "AND (:sizes IS NULL OR EXISTS (SELECT 1 FROM unnest(p.sizes) AS s WHERE s = ANY(:sizes)))", 
+              nativeQuery = true)
+       Page<Product> findWithAdvancedFilters(
+                     @Param("name") String name,
+                     @Param("minPrice") Double minPrice,
+                     @Param("maxPrice") Double maxPrice,
+                     @Param("categoryIds") List<Long> categoryIds,
+                     @Param("sizes") List<String> sizes,
+                     Pageable pageable);
+
        // Featured products
        Page<Product> findByIsDeleteOrderByCreatedAtDesc(Boolean isDelete, Pageable pageable);
 

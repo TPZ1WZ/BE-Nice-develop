@@ -15,4 +15,5 @@ public class ProductListDto {
     private Double price;
     private String thumbnail;
     private java.util.List<String> sizes;
+    private Integer stock; // Thêm stock để hiển thị còn hàng hay không
 }
