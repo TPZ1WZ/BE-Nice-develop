@@ -26,7 +26,7 @@ public class Order extends BaseEntity {
     private Double totalAmount;
     private Double totalDiscount;
     private Double finalAmount;
-    private Double shippingFee = 0.0; // Phí ship cố định 0đ (sẽ phát triển sau)
+    private Double shippingFee = 30000.0; // Phí ship cố định 30,000đ
     private Integer quantity;
     private String receiverName; // Tên người nhận hàng
     private String phone;

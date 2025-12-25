@@ -95,7 +95,7 @@ public class OrderService {
         order.setQuantity(cart.getTotalQuantity());
         order.setPaymentMethod(paymentMethod);
         order.setShippingAddress(shippingAddress);
-        order.setShippingFee(0.0); // Phí ship cố định 0đ
+        order.setShippingFee(30000.0); // Phí ship cố định 30,000đ
         order.setCustomerNote(customerNote);
         
         System.out.println("📝 [ORDER SERVICE] Setting order fields:");
@@ -115,8 +115,9 @@ public class OrderService {
             couponRepository.save(couponItem);
         }
         order.setTotalAmount(totalBeforeDiscount);
-        order.setFinalAmount(totalAfterDiscount);
         order.setTotalDiscount(bonusDiscount);
+        // Tổng cộng = (Tổng sản phẩm - Giảm giá) + Phí vận chuyển
+        order.setFinalAmount(totalAfterDiscount + order.getShippingFee());
 
         List<OrderItem> orderItems = new ArrayList<>();
         for (var item : cart.getItems()) {
@@ -243,12 +244,30 @@ public class OrderService {
             System.out.println("⚠️ [ORDER DTO] Order has no user!");
         }
 
+        // Fix cho đơn hàng cũ: nếu shippingFee = null hoặc 0 thì set = 30000
+        Double shippingFee = order.getShippingFee();
+        if (shippingFee == null || shippingFee == 0.0) {
+            shippingFee = 30000.0;
+        }
+        
+        // Tính lại finalAmount nếu cần (đơn hàng cũ có thể chưa cộng shipping fee)
+        Double finalAmount = order.getFinalAmount();
+        Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
+        Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+        
+        // Kiểm tra nếu finalAmount chưa bao gồm shipping fee
+        Double expectedFinalAmount = totalAmount - totalDiscount + shippingFee;
+        if (Math.abs(finalAmount - expectedFinalAmount) > 0.01) {
+            // Nếu sai lệch thì tính lại
+            finalAmount = expectedFinalAmount;
+        }
+
         return OrderDTO.builder()
                 .id(order.getId())
-                .totalAmount(order.getTotalAmount())
-                .totalDiscount(order.getTotalDiscount())
-                .finalAmount(order.getFinalAmount())
-                .shippingFee(order.getShippingFee())
+                .totalAmount(totalAmount)
+                .totalDiscount(totalDiscount)
+                .finalAmount(finalAmount)
+                .shippingFee(shippingFee)
                 .quantity(order.getQuantity())
                 .receiverName(order.getReceiverName())
                 .phone(order.getPhone())

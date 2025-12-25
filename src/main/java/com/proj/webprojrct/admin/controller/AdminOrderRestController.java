@@ -31,8 +31,8 @@ public class AdminOrderRestController {
     @GetMapping
     public List<Map<String, Object>> getAllOrders(@RequestParam(required = false) String status) {
         var orders = (status == null || status.trim().isEmpty()) 
-            ? orderRepository.findAll() 
-            : orderRepository.findByStatus(status.toUpperCase());
+            ? orderRepository.findAllByOrderByCreatedAtDesc() 
+            : orderRepository.findByStatusOrderByCreatedAtDesc(status.toUpperCase());
             
         return orders.stream().map(order -> {
             Map<String, Object> dto = new LinkedHashMap<>();
@@ -45,25 +45,63 @@ public class AdminOrderRestController {
             dto.put("paymentMethod", order.getPaymentMethod() != null ? order.getPaymentMethod() : "COD");
             dto.put("status", order.getStatus() != null ? order.getStatus() : "PENDING");
             
+            // Fix cho đơn hàng cũ: nếu shippingFee = null hoặc 0 thì set = 30000
+            Double shippingFee = order.getShippingFee();
+            if (shippingFee == null || shippingFee == 0.0) {
+                shippingFee = 30000.0;
+            }
+            
             // Calculate totalAmount if null (for old data)
             double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
+            double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
             double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;
             
-            // If both are 0, calculate from items
+            // If totalAmount is 0, calculate from items
             if (totalAmount == 0.0 && order.getItems() != null && !order.getItems().isEmpty()) {
                 totalAmount = order.getItems().stream()
                     .mapToDouble(item -> item.getProductPrice() * item.getQuantity())
                     .sum();
-                finalAmount = totalAmount - (order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0);
+            }
+            
+            // Tính lại finalAmount nếu cần
+            Double expectedFinalAmount = totalAmount - totalDiscount + shippingFee;
+            if (Math.abs(finalAmount - expectedFinalAmount) > 0.01) {
+                finalAmount = expectedFinalAmount;
             }
             
             dto.put("totalAmount", totalAmount);
-            dto.put("totalDiscount", order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0);
+            dto.put("totalDiscount", totalDiscount);
+            dto.put("shippingFee", shippingFee);
             dto.put("finalAmount", finalAmount);
             dto.put("quantity", order.getItems() != null ? order.getItems().stream().mapToInt(i -> i.getQuantity()).sum() : 0);
             dto.put("createdAt", order.getCreatedAt());
             dto.put("customerNote", order.getCustomerNote());
             dto.put("adminNote", order.getAdminNote());
+            
+            // Thêm items cho frontend hiển thị sản phẩm
+            if (order.getItems() != null && !order.getItems().isEmpty()) {
+                List<Map<String, Object>> itemsList = order.getItems().stream().map(item -> {
+                    Map<String, Object> itemDto = new LinkedHashMap<>();
+                    itemDto.put("id", item.getId());
+                    itemDto.put("productId", item.getProduct() != null ? item.getProduct().getId() : null);
+                    itemDto.put("productName", item.getProduct() != null ? item.getProduct().getName() : "");
+                    itemDto.put("productPrice", item.getProductPrice());
+                    itemDto.put("quantity", item.getQuantity());
+                    itemDto.put("totalPrice", item.getTotalPrice());
+                    itemDto.put("size", item.getSize());
+                    // Lấy danh sách ảnh của sản phẩm
+                    List<String> images = null;
+                    if (item.getProduct() != null && item.getProduct().getImages() != null) {
+                        images = item.getProduct().getImages();
+                    }
+                    itemDto.put("productImages", images != null ? images : List.of());
+                    return itemDto;
+                }).toList();
+                dto.put("items", itemsList);
+            } else {
+                dto.put("items", List.of());
+            }
+            
             return dto;
         }).toList();
     }
@@ -85,9 +123,27 @@ public class AdminOrderRestController {
                     dto.put("shippingAddress", order.getShippingAddress());
                     dto.put("paymentMethod", order.getPaymentMethod());
                     dto.put("status", order.getStatus());
-                    dto.put("totalAmount", order.getTotalAmount());
-                    dto.put("totalDiscount", order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0);
-                    dto.put("finalAmount", order.getFinalAmount());
+                    
+                    // Fix cho đơn hàng cũ: nếu shippingFee = null hoặc 0 thì set = 30000
+                    Double shippingFee = order.getShippingFee();
+                    if (shippingFee == null || shippingFee == 0.0) {
+                        shippingFee = 30000.0;
+                    }
+                    
+                    Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
+                    Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+                    Double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;
+                    
+                    // Tính lại finalAmount nếu cần (đơn hàng cũ có thể chưa cộng shipping fee)
+                    Double expectedFinalAmount = totalAmount - totalDiscount + shippingFee;
+                    if (Math.abs(finalAmount - expectedFinalAmount) > 0.01) {
+                        finalAmount = expectedFinalAmount;
+                    }
+                    
+                    dto.put("totalAmount", totalAmount);
+                    dto.put("totalDiscount", totalDiscount);
+                    dto.put("shippingFee", shippingFee);
+                    dto.put("finalAmount", finalAmount);
                     dto.put("quantity", order.getItems() != null ? order.getItems().stream().mapToInt(i -> i.getQuantity()).sum() : 0);
                     dto.put("createdAt", order.getCreatedAt());
                     dto.put("coupon", order.getCoupon() != null ? order.getCoupon().getCode() : null);
