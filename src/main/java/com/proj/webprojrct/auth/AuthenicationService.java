@@ -121,10 +121,9 @@ public class AuthenicationService {
         List<String> tokenList = Arrays.asList(token.split(","));
         long tokenNumber = Long.parseLong(tokenList.get(0));
         String email = tokenList.get(1);
-        UserToken confirmationToken = this.confirmationService.getConfirmationByTokenAndEmail(tokenNumber, email).
-                orElseThrow(
-                        () -> new VerificationException("token is not found.")
-                );
+        UserToken confirmationToken = this.confirmationService.getConfirmationByTokenAndEmail(tokenNumber, email)
+                .orElseThrow(
+                        () -> new VerificationException("token is not found."));
         if (confirmationToken.getConfirmedAt() != null) {
             throw new VerificationException("email is already confirmed");
         }
@@ -155,7 +154,7 @@ public class AuthenicationService {
     }
 
     public void handleChangePassword(ChangePasswordRequest changePasswordRequest, Authentication authentication) {
-        //Find current user
+        // Find current user
         String email = authentication.getName();
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
@@ -175,18 +174,18 @@ public class AuthenicationService {
 
     public LoginResponseV1 handleRefreshToken(RefreshTokenRequest request) throws InValidTokenExeption {
         String refresh_token = request.getRefresh_token();
-        //Check if refresh_token exist
+        // Check if refresh_token exist
         Optional<User> userOptional = userRepository.findByRefreshToken(refresh_token);
         if (userOptional.isEmpty()) {
             throw new InValidTokenExeption("Token not found");
         }
 
-        //Check if refresh_token is expiry
+        // Check if refresh_token is expiry
         if (jwtService.isTokenExpired(refresh_token)) {
             throw new InValidTokenExeption("Token is expiry");
         }
 
-        //Gen new access token
+        // Gen new access token
         User user = userOptional.get();
 
         String newAccessToken = jwtService.generateAccessToken(user);
@@ -194,7 +193,8 @@ public class AuthenicationService {
     }
 
     @Transactional
-    public void handleRegister(com.proj.webprojrct.auth.dto.request.RegisterDTO registerDTO) throws EntityExistsException {
+    public void handleRegister(com.proj.webprojrct.auth.dto.request.RegisterDTO registerDTO)
+            throws EntityExistsException {
         try {
             // Check if email already exists
             Optional<User> existingUser = userRepository.findByEmail(registerDTO.getEmail());
@@ -211,8 +211,9 @@ public class AuthenicationService {
                     .isActive(true) // ✅ FIX: Set active by default - user can login immediately
                     .role(com.proj.webprojrct.user.entity.UserRole.MEMBER) // Backend controlled - default role
                     .build();
-            // Note: firstName, lastName, address, gender không map vì User entity có nhưng không required khi register
-            
+            // Note: firstName, lastName, address, gender không map vì User entity có nhưng
+            // không required khi register
+
             // Save user
             System.out.println("DEBUG: Saving user...");
             User savedUser = userRepository.save(user);
@@ -234,7 +235,8 @@ public class AuthenicationService {
             token = this.userService.creatToken(token);
             System.out.println("DEBUG: Token created: " + token.getToken());
 
-            // Send verification email (non-blocking - don't fail registration if email fails)
+            // Send verification email (non-blocking - don't fail registration if email
+            // fails)
             System.out.println("DEBUG: Sending email...");
             try {
                 this.emailService.send(savedUser.getEmail(), savedUser.getFullName(), token.getToken());
@@ -244,7 +246,7 @@ public class AuthenicationService {
                 System.err.println("WARNING: User registered successfully but email notification failed");
                 // Continue - user is registered, just no email sent
             }
-            
+
         } catch (EntityExistsException e) {
             throw e; // Re-throw để controller catch
         } catch (Exception e) {
