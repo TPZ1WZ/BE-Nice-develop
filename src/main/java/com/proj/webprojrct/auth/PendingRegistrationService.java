@@ -47,19 +47,23 @@ public class PendingRegistrationService {
         Optional<PendingRegistration> pendingOpt = findByEmail(email);
 
         if (pendingOpt.isEmpty()) {
-            log.warn("⚠️ No pending registration found for email: {}", email);
+            log.warn("⚠️ No pending registration found for email: '{}'", email);
+            log.warn("⚠️ Available pending emails: {}", pendingRegistrations.keySet());
             return Optional.empty();
         }
 
         PendingRegistration pending = pendingOpt.get();
+        
+        log.info("🔍 Comparing OTP - Stored: {}, Provided: {}", pending.getOtp(), otp);
 
         // Check if OTP matches
         if (pending.getOtp() != otp) {
-            log.warn("⚠️ Invalid OTP for email: {}", email);
+            log.warn("⚠️ Invalid OTP for email: '{}' - Expected: {}, Got: {}", 
+                    email, pending.getOtp(), otp);
             return Optional.empty();
         }
 
-        log.info("✅ OTP verified successfully for email: {}", email);
+        log.info("✅ OTP verified successfully for email: '{}'", email);
         return Optional.of(pending);
     }
 

@@ -155,36 +155,39 @@ public class AuthenticationController {
     public ResponseEntity<RegisterResponse> registerWithOtp(@RequestBody RegisterDTO registerDTO,
             HttpServletRequest request) {
         String clientIp = request.getRemoteAddr();
-        log.info("📝 [REGISTER-OTP] Registration request - Email: {} | IP: {}", registerDTO.getEmail(), clientIp);
+        
+        // Normalize email: trim and lowercase
+        String normalizedEmail = registerDTO.getEmail().trim().toLowerCase();
+        log.info("📝 [REGISTER-OTP] Registration request - Email: '{}' | IP: {}", normalizedEmail, clientIp);
 
         try {
             // Check if email already exists in database
-            Optional<User> existingUser = userRepository.findByEmail(registerDTO.getEmail());
+            Optional<User> existingUser = userRepository.findByEmail(normalizedEmail);
             if (existingUser.isPresent()) {
-                log.warn("⚠️ [REGISTER-OTP] Email already registered: {}", registerDTO.getEmail());
+                log.warn("⚠️ [REGISTER-OTP] Email already registered: '{}'", normalizedEmail);
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(RegisterResponse.builder()
                                 .success(false)
                                 .message("Email already exists")
-                                .email(registerDTO.getEmail())
+                                .email(normalizedEmail)
                                 .build());
             }
 
             // Check if there's already a pending registration
             Optional<PendingRegistration> existingPending = pendingRegistrationService
-                    .findByEmail(registerDTO.getEmail());
+                    .findByEmail(normalizedEmail);
             if (existingPending.isPresent()) {
-                log.info("📧 [REGISTER-OTP] Resending OTP to existing pending registration: {}",
-                        registerDTO.getEmail());
+                log.info("📧 [REGISTER-OTP] Resending OTP to existing pending registration: '{}'",
+                        normalizedEmail);
             }
 
             // Generate 6-digit OTP
             long otp = 100000 + new Random().nextInt(900000);
-            log.info("🔢 [REGISTER-OTP] Generated OTP for {}: {}", registerDTO.getEmail(), otp);
+            log.info("🔢 [REGISTER-OTP] Generated OTP for '{}': {}", normalizedEmail, otp);
 
             // Create pending registration
             PendingRegistration pending = PendingRegistration.builder()
-                    .email(registerDTO.getEmail())
+                    .email(normalizedEmail)
                     .fullName(registerDTO.getFullName())
                     .phone(registerDTO.getPhone())
                     .passwordHash(passwordEncoder.encode(registerDTO.getPassword()))
@@ -197,8 +200,8 @@ public class AuthenticationController {
 
             // Send OTP email
             try {
-                emailService.sendRegistrationOtp(registerDTO.getEmail(), registerDTO.getFullName(), otp);
-                log.info("✅ [REGISTER-OTP] OTP email sent to: {}", registerDTO.getEmail());
+                emailService.sendRegistrationOtp(normalizedEmail, registerDTO.getFullName(), otp);
+                log.info("✅ [REGISTER-OTP] OTP email sent to: '{}'", normalizedEmail);
             } catch (Exception emailEx) {
                 log.error("❌ [REGISTER-OTP] Failed to send OTP email: {}", emailEx.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -211,12 +214,12 @@ public class AuthenticationController {
             return ResponseEntity.ok(RegisterResponse.builder()
                     .success(true)
                     .message("OTP sent to your email. Please verify within 5 minutes.")
-                    .email(registerDTO.getEmail())
+                    .email(normalizedEmail)
                     .build());
 
         } catch (Exception e) {
-            log.error("❌ [REGISTER-OTP] Registration failed - Email: {} | Error: {}",
-                    registerDTO.getEmail(), e.getMessage(), e);
+            log.error("❌ [REGISTER-OTP] Registration failed - Email: '{}' | Error: {}",
+                    normalizedEmail, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(RegisterResponse.builder()
                             .success(false)
@@ -228,24 +231,32 @@ public class AuthenticationController {
     @PostMapping("/verify-registration-otp")
     @ApiMessage("Verify OTP and complete registration")
     public ResponseEntity<VerifyOtpResponse> verifyRegistrationOtp(@RequestBody VerifyOtpDTO verifyOtpDTO) {
-        log.info("🔢 [VERIFY-REG-OTP] Verification request - Email: {}", verifyOtpDTO.getEmail());
+        log.info("🔢 [VERIFY-REG-OTP] Verification request - Email: '{}', OTP: {}", 
+                verifyOtpDTO.getEmail(), verifyOtpDTO.getOtp());
 
         try {
+            // Trim email to remove whitespace
+            String trimmedEmail = verifyOtpDTO.getEmail().trim().toLowerCase();
+            log.info("📧 [VERIFY-REG-OTP] Trimmed email: '{}'", trimmedEmail);
+            
             // Verify OTP and get pending registration
             Optional<PendingRegistration> pendingOpt = pendingRegistrationService.verifyAndGet(
-                    verifyOtpDTO.getEmail(), verifyOtpDTO.getOtp());
+                    trimmedEmail, verifyOtpDTO.getOtp());
 
             if (pendingOpt.isEmpty()) {
-                log.warn("⚠️ [VERIFY-REG-OTP] Invalid OTP or expired - Email: {}", verifyOtpDTO.getEmail());
+                log.warn("⚠️ [VERIFY-REG-OTP] Invalid OTP or expired - Email: '{}', OTP provided: {}", 
+                        trimmedEmail, verifyOtpDTO.getOtp());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(VerifyOtpResponse.builder()
                                 .success(false)
                                 .message("Invalid OTP or OTP has expired")
-                                .email(verifyOtpDTO.getEmail())
+                                .email(trimmedEmail)
                                 .build());
             }
 
             PendingRegistration pending = pendingOpt.get();
+            
+            log.info("✅ [VERIFY-REG-OTP] OTP verified! Creating user - Email: '{}'", pending.getEmail());
 
             // Create user in database
             User newUser = User.builder()
@@ -258,7 +269,7 @@ public class AuthenticationController {
                     .build();
 
             userRepository.save(newUser);
-            log.info("✅ [VERIFY-REG-OTP] User created successfully - Email: {}", pending.getEmail());
+            log.info("✅ [VERIFY-REG-OTP] User created successfully - Email: '{}'", pending.getEmail());
 
             // Remove pending registration
             pendingRegistrationService.removePending(pending.getEmail());
@@ -277,6 +288,90 @@ public class AuthenticationController {
                             .success(false)
                             .message("Verification failed: " + e.getMessage())
                             .email(verifyOtpDTO.getEmail())
+                            .build());
+        }
+    }
+
+    @PostMapping("/resend-registration-otp")
+    @ApiMessage("Resend OTP for registration")
+    public ResponseEntity<RegisterResponse> resendRegistrationOtp(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String normalizedEmail = email.trim().toLowerCase();
+        
+        log.info("🔄 [RESEND-OTP] Resend request for email: '{}'", normalizedEmail);
+
+        try {
+            // Check if email already exists in database
+            Optional<User> existingUser = userRepository.findByEmail(normalizedEmail);
+            if (existingUser.isPresent()) {
+                log.warn("⚠️ [RESEND-OTP] Email already registered: '{}'", normalizedEmail);
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(RegisterResponse.builder()
+                                .success(false)
+                                .message("Email already registered. Please login instead.")
+                                .email(normalizedEmail)
+                                .build());
+            }
+
+            // Check if there's a pending registration
+            Optional<PendingRegistration> existingPending = pendingRegistrationService
+                    .findByEmail(normalizedEmail);
+            
+            if (existingPending.isEmpty()) {
+                log.warn("⚠️ [RESEND-OTP] No pending registration found for: '{}'", normalizedEmail);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(RegisterResponse.builder()
+                                .success(false)
+                                .message("No pending registration found. Please register first.")
+                                .email(normalizedEmail)
+                                .build());
+            }
+
+            PendingRegistration pending = existingPending.get();
+            
+            // Generate new 6-digit OTP
+            long newOtp = 100000 + new Random().nextInt(900000);
+            log.info("🔢 [RESEND-OTP] Generated new OTP for '{}': {}", normalizedEmail, newOtp);
+
+            // Update pending registration with new OTP and extended expiry
+            PendingRegistration updatedPending = PendingRegistration.builder()
+                    .email(pending.getEmail())
+                    .fullName(pending.getFullName())
+                    .phone(pending.getPhone())
+                    .passwordHash(pending.getPasswordHash())
+                    .otp(newOtp)
+                    .createdAt(LocalDateTime.now())
+                    .expiresAt(LocalDateTime.now().plusMinutes(5))
+                    .build();
+
+            pendingRegistrationService.savePending(updatedPending);
+
+            // Send new OTP email
+            try {
+                emailService.sendRegistrationOtp(normalizedEmail, pending.getFullName(), newOtp);
+                log.info("✅ [RESEND-OTP] New OTP email sent to: '{}'", normalizedEmail);
+            } catch (Exception emailEx) {
+                log.error("❌ [RESEND-OTP] Failed to send OTP email: {}", emailEx.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(RegisterResponse.builder()
+                                .success(false)
+                                .message("Failed to send OTP email")
+                                .build());
+            }
+
+            return ResponseEntity.ok(RegisterResponse.builder()
+                    .success(true)
+                    .message("New OTP sent to your email. Please verify within 5 minutes.")
+                    .email(normalizedEmail)
+                    .build());
+
+        } catch (Exception e) {
+            log.error("❌ [RESEND-OTP] Failed to resend OTP - Email: '{}' | Error: {}",
+                    normalizedEmail, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(RegisterResponse.builder()
+                            .success(false)
+                            .message("Failed to resend OTP: " + e.getMessage())
                             .build());
         }
     }
@@ -666,3 +761,4 @@ public class AuthenticationController {
      * }
      */
 }
+

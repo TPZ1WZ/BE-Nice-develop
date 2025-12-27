@@ -1,5 +1,6 @@
 package com.proj.webprojrct.order.service;
 
+import com.proj.webprojrct.cart.entity.Cart;
 import com.proj.webprojrct.cart.repository.CartRepository;
 import com.proj.webprojrct.order.dto.*;
 import com.proj.webprojrct.order.entity.Order;
@@ -36,6 +37,7 @@ public class OrderService {
     private final PaymentService paymentService;
     private final ReviewRepository reviewRepository;
     private final NotificationService notificationService;
+    private final com.proj.webprojrct.cart.repository.CartItemRepository cartItemRepository;
 
     public void cancelOrder(User user, Long orderId) {
         var order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng."));
@@ -71,6 +73,7 @@ public class OrderService {
     public String placeOrder(User user, String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode, String customerNote) {
         System.out.println("🔍 [ORDER SERVICE] placeOrder called with:");
         System.out.println("  - User: " + user.getEmail());
+        System.out.println("  - User ID: " + user.getId());
         System.out.println("  - Receiver Name: " + receiverName);
         System.out.println("  - Shipping Address: " + shippingAddress);
         System.out.println("  - Payment Method: " + paymentMethod);
@@ -78,10 +81,55 @@ public class OrderService {
         System.out.println("  - Coupon Code: " + couponCode);
         System.out.println("  - Customer Note: " + customerNote);
         
-        var cart = cartRepository.findByUserId(user.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng cho người dùng."));
-        if (cart.getItems().isEmpty()) {
-            throw new RuntimeException("Giỏ hàng trống, không thể đặt hàng.");
+        // 🔒 Kiểm tra xem có order nào đang WAITING_FOR_PAYMENT không (tránh duplicate order khi click nhiều lần)
+        if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
+            var existingOrder = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
+                .stream()
+                .filter(o -> "WAITING_FOR_PAYMENT".equals(o.getStatus()))
+                .filter(o -> o.getCreatedAt().isAfter(java.time.LocalDateTime.now().minusMinutes(15))) // Order trong vòng 15 phút
+                .findFirst();
+            
+            if (existingOrder.isPresent()) {
+                var order = existingOrder.get();
+                System.out.println("⚠️ [ORDER SERVICE] Found existing WAITING_FOR_PAYMENT order #" + order.getId());
+                System.out.println("  - Returning existing VNPay URL instead of creating new order");
+                
+                // Tạo lại payment URL với transaction ID hiện có
+                var vnPayOrder = paymentService.createPayment(
+                    new PaymentService.VnPayBody(
+                        order.getFinalAmount(), 
+                        "Thanh toan don hang #" + order.getId()
+                    )
+                );
+                return vnPayOrder.getPaymentUrl();
+            }
         }
+        
+        // Auto-create cart if not exists
+        var cart = cartRepository.findByUserId(user.getId()).orElseGet(() -> {
+            System.out.println("⚠️ Cart not found for user " + user.getEmail() + ", creating new cart...");
+            var newCart = new Cart();
+            newCart.setUser(user);
+            return cartRepository.save(newCart);
+        });
+        
+        System.out.println("🛒 [CART CHECK] Cart ID: " + cart.getId());
+        System.out.println("🛒 [CART CHECK] Cart User ID: " + cart.getUser().getId());
+        
+        // ⚡ FIX: Load items trực tiếp từ database thay vì dùng lazy loading
+        var cartItems = cartItemRepository.findAllByCartId(cart.getId());
+        System.out.println("🛒 [CART CHECK] Cart Items from DB: " + cartItems);
+        System.out.println("🛒 [CART CHECK] Cart Items Size: " + (cartItems != null ? cartItems.size() : "NULL"));
+        System.out.println("🛒 [CART CHECK] Cart Total Price: " + cart.getTotalPrice());
+        System.out.println("🛒 [CART CHECK] Cart Total Quantity: " + cart.getTotalQuantity());
+        
+        if (cartItems == null || cartItems.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng trống, không thể đặt hàng. Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng.");
+        }
+        
+        // Set items vào cart để dùng cho logic phía sau
+        cart.getItems().clear();
+        cart.getItems().addAll(cartItems);
         Coupon couponItem = null;
         double totalBeforeDiscount = cart.getTotalPrice();
 
@@ -181,10 +229,27 @@ public class OrderService {
         cartRepository.delete(cart);
 
         if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
-            VnpayDTO vnPayOrder = paymentService.createPayment(new PaymentService.VnPayBody(newOrder.getTotalAmount(), "Thanh toan"));
+            System.out.println("💳 [ORDER SERVICE] Processing VNPAY payment...");
+            System.out.println("  - Order ID: " + newOrder.getId());
+            System.out.println("  - Final Amount: " + newOrder.getFinalAmount());
+            
+            // Sử dụng finalAmount (đã bao gồm phí ship và giảm giá) thay vì totalAmount
+            VnpayDTO vnPayOrder = paymentService.createPayment(
+                new PaymentService.VnPayBody(
+                    newOrder.getFinalAmount(), 
+                    "Thanh toan don hang #" + newOrder.getId()
+                )
+            );
+            
+            System.out.println("✅ [ORDER SERVICE] VNPay payment created");
+            System.out.println("  - Transaction ID: " + vnPayOrder.getTxnId());
+            System.out.println("  - Payment URL: " + vnPayOrder.getPaymentUrl());
+            
             newOrder.setTxnId(vnPayOrder.getTxnId());
             newOrder.setStatus("WAITING_FOR_PAYMENT");
             orderRepository.save(newOrder);
+            
+            System.out.println("✅ [ORDER SERVICE] Order updated with VNPAY status");
             return vnPayOrder.getPaymentUrl();
         }
         return null;
