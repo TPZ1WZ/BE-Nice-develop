@@ -92,6 +92,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     @Transactional(readOnly = true)
     public Page<CouponResponse> getAllCoupons(Pageable pageable) {
+        // Chỉ trả về coupon còn active (chưa bị xóa soft delete)
         return couponRepository.findAll(pageable)
                 .map(couponMapper::toResponse);
     }
@@ -127,9 +128,8 @@ public class CouponServiceImpl implements CouponService {
         
         Coupon coupon = findCouponById(id);
         
-        // Soft delete - chỉ set isActive = false
-        coupon.setIsActive(false);
-        couponRepository.save(coupon);
+        // Hard delete - xóa hẳn khỏi database
+        couponRepository.delete(coupon);
         
         log.info("Deleted coupon successfully with ID: {}", id);
     }
@@ -195,7 +195,9 @@ public class CouponServiceImpl implements CouponService {
     @Override
     @Transactional(readOnly = true)
     public List<CouponResponse> getValidCouponsList() {
-        return couponRepository.findValidCoupons(LocalDateTime.now())
+        // Use findValidCouponsV2 which handles NULL dates correctly
+        // Pass null for orderAmount to get all valid coupons regardless of order amount
+        return couponRepository.findValidCouponsV2(null)
                 .stream()
                 .map(couponMapper::toResponse)
                 .collect(Collectors.toList());

@@ -1,6 +1,7 @@
 
 package com.proj.webprojrct.promotion.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.proj.webprojrct.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,7 @@ public class Coupon extends BaseEntity {
     @Column(nullable = false)
     private Double discountValue;
 
+    @JsonProperty("minOrderValue")
     @Column(nullable = false)
     private Double minOrderAmount = 0.0;
 
@@ -62,9 +64,14 @@ public class Coupon extends BaseEntity {
     // Helper methods
     public boolean isValid() {
         LocalDateTime now = LocalDateTime.now();
+        // Handle null dates: if startDate is null, assume it's always valid from start
+        // if endDate is null, assume it never expires
+        boolean startDateValid = (startDate == null) || now.isAfter(startDate) || now.isEqual(startDate);
+        boolean endDateValid = (endDate == null) || now.isBefore(endDate) || now.isEqual(endDate);
+        
         return isActive && 
-               now.isAfter(startDate) && 
-               now.isBefore(endDate) && 
+               startDateValid && 
+               endDateValid && 
                usedCount < usageLimit;
     }
 

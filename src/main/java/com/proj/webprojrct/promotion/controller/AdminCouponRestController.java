@@ -68,11 +68,15 @@ public class AdminCouponRestController {
     private CouponCreateRequest mapToCreateRequest(Map<String, Object> payload) {
         CouponCreateRequest request = new CouponCreateRequest();
         request.setCode((String) payload.get("code"));
-        request.setName((String) payload.get("code")); // Use code as name if missing
+        
+        // Nhận name từ payload, nếu không có thì dùng code
+        String name = (String) payload.get("name");
+        request.setName(name != null ? name : (String) payload.get("code"));
+        
         request.setDescription((String) payload.get("description"));
 
         String type = (String) payload.get("discountType");
-        if ("PERCENT".equals(type)) {
+        if ("PERCENTAGE".equals(type) || "PERCENT".equals(type)) {
             request.setDiscountType(Coupon.DiscountType.PERCENTAGE);
         } else {
             request.setDiscountType(Coupon.DiscountType.FIXED_AMOUNT);
@@ -80,6 +84,9 @@ public class AdminCouponRestController {
 
         Object val = payload.get("discountValue");
         request.setDiscountValue(parseDouble(val));
+
+        Object maxDiscount = payload.get("maxDiscountAmount");
+        request.setMaxDiscountAmount(parseDouble(maxDiscount));
 
         Object minOrder = payload.get("minOrderValue");
         request.setMinOrderAmount(parseDouble(minOrder));
@@ -90,18 +97,27 @@ public class AdminCouponRestController {
         request.setStartDate(parseDate((String) payload.get("startDate")));
         request.setEndDate(parseDate((String) payload.get("endDate")));
 
-        request.setIsActive((Boolean) payload.get("active"));
+        // Nhận cả active và isActive
+        Boolean isActive = (Boolean) payload.get("active");
+        if (isActive == null) {
+            isActive = (Boolean) payload.get("isActive");
+        }
+        request.setIsActive(isActive);
 
         return request;
     }
 
     private CouponUpdateRequest mapToUpdateRequest(Map<String, Object> payload) {
         CouponUpdateRequest request = new CouponUpdateRequest();
-        request.setName((String) payload.get("code"));
+        
+        // Nhận name từ payload
+        String name = (String) payload.get("name");
+        request.setName(name != null ? name : (String) payload.get("code"));
+        
         request.setDescription((String) payload.get("description"));
 
         String type = (String) payload.get("discountType");
-        if ("PERCENT".equals(type)) {
+        if ("PERCENTAGE".equals(type) || "PERCENT".equals(type)) {
             request.setDiscountType(Coupon.DiscountType.PERCENTAGE);
         } else {
             request.setDiscountType(Coupon.DiscountType.FIXED_AMOUNT);
@@ -109,6 +125,9 @@ public class AdminCouponRestController {
 
         Object val = payload.get("discountValue");
         request.setDiscountValue(parseDouble(val));
+
+        Object maxDiscount = payload.get("maxDiscountAmount");
+        request.setMaxDiscountAmount(parseDouble(maxDiscount));
 
         Object minOrder = payload.get("minOrderValue");
         request.setMinOrderAmount(parseDouble(minOrder));
@@ -119,7 +138,12 @@ public class AdminCouponRestController {
         request.setStartDate(parseDate((String) payload.get("startDate")));
         request.setEndDate(parseDate((String) payload.get("endDate")));
 
-        request.setIsActive((Boolean) payload.get("active"));
+        // Nhận cả active và isActive
+        Boolean isActive = (Boolean) payload.get("active");
+        if (isActive == null) {
+            isActive = (Boolean) payload.get("isActive");
+        }
+        request.setIsActive(isActive);
 
         return request;
     }

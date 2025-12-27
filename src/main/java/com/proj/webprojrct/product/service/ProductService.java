@@ -361,7 +361,7 @@ public class ProductService {
      * Lấy tất cả categories
      */
     public List<CategoryDto> getAllCategories() {
-        return categoryRepo.findAll()
+        return categoryRepo.findByIsDelete(false)
                 .stream()
                 .map(category -> new CategoryDto(
                         category.getId(),

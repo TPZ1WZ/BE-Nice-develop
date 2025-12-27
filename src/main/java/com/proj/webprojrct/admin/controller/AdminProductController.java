@@ -53,7 +53,8 @@ public class AdminProductController {
                 .salePrice(null) // Product entity không có field này
                 .stock(product.getStock())
                 .status(product.isDelete() ? "inactive" : "active") // Map isDelete -> status
-                .image(product.getImages() != null && !product.getImages().isEmpty() ? product.getImages().get(0) : null) // Lấy ảnh đầu tiên
+                .image(product.getImages() != null && !product.getImages().isEmpty() ? product.getImages().get(0) : null) // Lấy ảnh đầu tiên (backward compatibility)
+                .images(product.getImages()) // Return full images list
                 .description(product.getDescription())
                 .sizes(product.getSizes()) // Thêm sizes
                 .createdAt(product.getCreatedAt())
@@ -67,7 +68,7 @@ public class AdminProductController {
     /**
      * Lấy danh sách tất cả sản phẩm với search query (Android app cần format này)
      * GET /api/admin/products?search=nike
-     * CHỈ LẤY SẢN PHẨM CHƯƠ XÓA (isDelete = false)
+     * LẤY TẤT CẢ SẢN PHẨM (bao gồm cả sản phẩm đã ẩn) để admin có thể quản lý
      */
     @GetMapping
     public ResponseEntity<List<AdminProductDTO>> getAllProducts(
@@ -75,18 +76,23 @@ public class AdminProductController {
         
         List<Product> products;
         if (search != null && !search.trim().isEmpty()) {
-            // Search by name - CHỈ LẤY SẢN PHẨM CHƯƠ XÓA
-            Page<Product> productPage = adminProductRepository.findByNameContainingIgnoreCaseAndIsDeleteFalse(
+            // Search by name - LẤY TẤT CẢ (bao gồm cả isDelete = true)
+            Page<Product> productPage = adminProductRepository.findByNameContainingIgnoreCase(
                 search.trim(), org.springframework.data.domain.PageRequest.of(0, 100));
             products = productPage.getContent();
         } else {
-            // Get all products - CHỈ LẤY SẢN PHẨM CHƯƠ XÓA
-            products = adminProductRepository.findByIsDeleteFalse();
+            // Get all products - LẤY TẤT CẢ (bao gồm cả isDelete = true)
+            products = adminProductRepository.findAll();
         }
         
-        // Convert to DTO
+        // Convert to DTO và sắp xếp theo stock tăng dần (sản phẩm hết hàng lên đầu)
         List<AdminProductDTO> dtos = products.stream()
                 .map(this::toDTO)
+                .sorted((p1, p2) -> {
+                    int stock1 = p1.getStock() != null ? p1.getStock() : 0;
+                    int stock2 = p2.getStock() != null ? p2.getStock() : 0;
+                    return Integer.compare(stock1, stock2); // Tăng dần: 0, 1, 2, ...
+                })
                 .collect(Collectors.toList());
         
         return ok(dtos);
@@ -136,8 +142,12 @@ public class AdminProductController {
             product.setSizes(dto.getSizes());
         }
         
-        // Note: images cần convert String -> List<String>
-        if (dto.getImage() != null) {
+        // Handle images - prioritize 'images' list, fallback to 'image' single
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            // Use images list if provided
+            product.setImages(dto.getImages());
+        } else if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+            // Fallback to single image
             product.setImages(List.of(dto.getImage()));
         }
         
@@ -180,7 +190,12 @@ public class AdminProductController {
                         existingProduct.setSizes(dto.getSizes());
                     }
                     
-                    if (dto.getImage() != null) {
+                    // Handle images - prioritize 'images' list, fallback to 'image' single
+                    if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+                        // Use images list if provided
+                        existingProduct.setImages(dto.getImages());
+                    } else if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+                        // Fallback to single image
                         existingProduct.setImages(List.of(dto.getImage()));
                     }
 
@@ -271,14 +286,14 @@ public class AdminProductController {
      */
     @GetMapping("/stats")
     public ResponseEntity<ProductStatsDTO> getProductStats() {
-        // CHỈ ĐẾM SẢN PHẨM CHƯƠ XÓA
-        List<Product> allProducts = adminProductRepository.findByIsDeleteFalse();
+        // ĐẾM CHỈ SẢN PHẨM ACTIVE (isDelete = false) cho stats
+        List<Product> activeProducts = adminProductRepository.findByIsDeleteFalse();
         
-        int total = allProducts.size();
-        int outOfStock = (int) allProducts.stream()
+        int total = activeProducts.size();
+        int outOfStock = (int) activeProducts.stream()
                 .filter(p -> p.getStock() == null || p.getStock() == 0)
                 .count();
-        int lowStock = (int) allProducts.stream()
+        int lowStock = (int) activeProducts.stream()
                 .filter(p -> p.getStock() != null && p.getStock() > 0 && p.getStock() < 10)
                 .count();
         
