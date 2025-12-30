@@ -17,7 +17,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     @Query("SELECT oi.product.id, oi.product.name, SUM(oi.quantity) as totalSold, oi.product.images, oi.product.slug " +
             "FROM OrderItem oi " +
             "JOIN oi.order o " +
-            "WHERE o.status IN ('completed', 'shipping') " +
+            "WHERE LOWER(o.status) IN ('completed', 'shipping') " +
             "GROUP BY oi.product.id, oi.product.name, oi.product.images, oi.product.slug " +
             "ORDER BY totalSold DESC")
     List<Object[]> findTopSellingProducts();

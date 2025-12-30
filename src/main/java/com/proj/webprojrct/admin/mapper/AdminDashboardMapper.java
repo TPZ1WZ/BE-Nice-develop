@@ -3,7 +3,8 @@ package com.proj.webprojrct.admin.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+// Temporarily disabled until mapper methods are added
+// @Mapper(componentModel = "spring")
 public interface AdminDashboardMapper {
     AdminDashboardMapper INSTANCE = Mappers.getMapper(AdminDashboardMapper.class);
 

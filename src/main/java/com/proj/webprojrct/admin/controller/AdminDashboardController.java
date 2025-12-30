@@ -14,7 +14,7 @@ import java.util.Map;
  * Controller cho dashboard tổng quan admin
  */
 @RestController
-@RequestMapping("/api/admin/dashboard")
+@RequestMapping("/api/v1/admin/dashboard")
 @RequiredArgsConstructor
 public class AdminDashboardController {
 

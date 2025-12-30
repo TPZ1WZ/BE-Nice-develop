@@ -57,37 +57,37 @@ public class AdminDashboardService {
                     : BigDecimal.ZERO;
             overview.put("totalRevenue", totalRevenue);
 
-            // --- Tính toán Growth (Tăng trưởng so với tháng trước) ---
+            // --- Tính toán Growth (Tăng trưởng so với 30 ngày trước) ---
             LocalDate now = LocalDate.now();
-            int currentMonth = now.getMonthValue();
-            int currentYear = now.getYear();
+            LocalDateTime endDate = now.atTime(23, 59, 59);
+            LocalDateTime startDate = now.minusDays(30).atStartOfDay();
+            
+            LocalDateTime prevEndDate = now.minusDays(30).atTime(23, 59, 59);
+            LocalDateTime prevStartDate = now.minusDays(60).atStartOfDay();
 
-            int prevMonth = currentMonth == 1 ? 12 : currentMonth - 1;
-            int prevYear = currentMonth == 1 ? currentYear - 1 : currentYear;
-
-            // 1. Revenue Growth
-            Double currentMonthRevenue = adminOrderRepository.calculateMonthlyRevenueValue(currentYear, currentMonth);
-            Double prevMonthRevenue = adminOrderRepository.calculateMonthlyRevenueValue(prevYear, prevMonth);
+            // 1. Revenue Growth (30 ngày gần nhất vs 30 ngày trước đó)
+            Double currentPeriodRevenue = adminOrderRepository.calculateRevenueInPeriod(startDate, endDate);
+            Double prevPeriodRevenue = adminOrderRepository.calculateRevenueInPeriod(prevStartDate, prevEndDate);
 
             double revenueGrowth = 0.0;
-            if (prevMonthRevenue != null && prevMonthRevenue > 0) {
-                double current = currentMonthRevenue != null ? currentMonthRevenue : 0.0;
-                revenueGrowth = ((current - prevMonthRevenue) / prevMonthRevenue) * 100;
-            } else if (currentMonthRevenue != null && currentMonthRevenue > 0) {
+            if (prevPeriodRevenue != null && prevPeriodRevenue > 0) {
+                double current = currentPeriodRevenue != null ? currentPeriodRevenue : 0.0;
+                revenueGrowth = ((current - prevPeriodRevenue) / prevPeriodRevenue) * 100;
+            } else if (currentPeriodRevenue != null && currentPeriodRevenue > 0) {
                 revenueGrowth = 100.0; // Từ 0 lên có doanh thu -> 100%
             }
             overview.put("revenueGrowth", revenueGrowth);
-            overview.put("monthlyRevenue", BigDecimal.valueOf(currentMonthRevenue != null ? currentMonthRevenue : 0.0));
+            overview.put("monthlyRevenue", BigDecimal.valueOf(currentPeriodRevenue != null ? currentPeriodRevenue : 0.0));
 
-            // 2. Order Growth
-            Long currentMonthOrders = adminOrderRepository.countMonthlyOrders(currentYear, currentMonth);
-            Long prevMonthOrders = adminOrderRepository.countMonthlyOrders(prevYear, prevMonth);
+            // 2. Order Growth (30 ngày gần nhất vs 30 ngày trước đó)
+            Long currentPeriodOrders = adminOrderRepository.countOrdersInPeriod(startDate, endDate);
+            Long prevPeriodOrders = adminOrderRepository.countOrdersInPeriod(prevStartDate, prevEndDate);
 
             double ordersGrowth = 0.0;
-            if (prevMonthOrders != null && prevMonthOrders > 0) {
-                long current = currentMonthOrders != null ? currentMonthOrders : 0;
-                ordersGrowth = ((double) (current - prevMonthOrders) / prevMonthOrders) * 100;
-            } else if (currentMonthOrders != null && currentMonthOrders > 0) {
+            if (prevPeriodOrders != null && prevPeriodOrders > 0) {
+                long current = currentPeriodOrders != null ? currentPeriodOrders : 0;
+                ordersGrowth = ((double) (current - prevPeriodOrders) / prevPeriodOrders) * 100;
+            } else if (currentPeriodOrders != null && currentPeriodOrders > 0) {
                 ordersGrowth = 100.0;
             }
             overview.put("ordersGrowth", ordersGrowth);
@@ -177,25 +177,126 @@ public class AdminDashboardService {
 
         try {
             LocalDateTime endDate = LocalDateTime.now();
-            LocalDateTime startDate = endDate.minusDays(days);
+            LocalDateTime startDate;
+            
+            // Tính startDate dựa trên kỳ thống kê
+            if (days == 0) {
+                // Tháng này: từ ngày 1 của tháng đến hiện tại
+                startDate = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+            } else if (days == 1) {
+                // Hôm nay: từ 00:00:00 hôm nay đến hiện tại
+                startDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+            } else {
+                // 7 ngày hoặc 30 ngày: từ 00:00:00 của N ngày trước đến hiện tại
+                startDate = LocalDateTime.now().minusDays(days - 1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+            }
+            
+            log.debug("Querying revenue from {} to {}", startDate, endDate);
 
             switch (chartType.toLowerCase()) {
                 case "revenue":
                     List<Object[]> revenueData = adminOrderRepository.findRevenueByDateRange(startDate, endDate);
+                    log.debug("Revenue data rows returned: {}", revenueData.size());
+                    
+                    // Tạo Map để tra cứu nhanh doanh thu theo ngày
+                    Map<LocalDate, Double> revenueMap = new HashMap<>();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM");
+                    
+                    for (Object[] row : revenueData) {
+                        log.debug("Processing row: date type={}, revenue type={}", 
+                                  row[0] != null ? row[0].getClass().getName() : "null",
+                                  row[1] != null ? row[1].getClass().getName() : "null");
+                        
+                        // Skip null rows
+                        if (row[0] == null) {
+                            log.warn("Skipping row with null date");
+                            continue;
+                        }
+                        
+                        // Convert date to LocalDate (handle both java.sql.Date and LocalDate)
+                        LocalDate date;
+                        if (row[0] instanceof LocalDate) {
+                            date = (LocalDate) row[0];
+                        } else if (row[0] instanceof java.sql.Date) {
+                            date = ((java.sql.Date) row[0]).toLocalDate();
+                        } else {
+                            log.warn("Unexpected date type: {}", row[0].getClass().getName());
+                            continue;
+                        }
+                        
+                        Double revenue = (Double) row[1];
+                        revenueMap.put(date, revenue != null ? revenue : 0.0);
+                        
+                        log.debug("Revenue on {}: {}", date, revenue);
+                    }
+                    
+                    // Tạo danh sách đầy đủ các ngày trong khoảng thời gian
                     List<String> revenueLabels = new ArrayList<>();
                     List<Double> revenueValues = new ArrayList<>();
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    for (Object[] row : revenueData) {
-                        LocalDate date = (LocalDate) row[0];
-                        Double revenue = (Double) row[1];
-                        revenueLabels.add(date.format(formatter));
-                        revenueValues.add(revenue != null ? revenue : 0.0);
+                    
+                    LocalDate currentDate = startDate.toLocalDate();
+                    LocalDate lastDate = endDate.toLocalDate();
+                    
+                    while (!currentDate.isAfter(lastDate)) {
+                        String label = currentDate.format(formatter);
+                        Double revenue = revenueMap.getOrDefault(currentDate, 0.0);
+                        
+                        revenueLabels.add(label);
+                        revenueValues.add(revenue);
+                        
+                        log.debug("Added to chart: {} = {}", label, revenue);
+                        currentDate = currentDate.plusDays(1);
                     }
 
                     chartData.put("labels", revenueLabels);
                     chartData.put("data", revenueValues);
                     chartData.put("title", "Doanh thu " + days + " ngày qua");
+                    
+                    // Tính tổng doanh thu kỳ hiện tại
+                    double currentPeriodTotal = revenueValues.stream()
+                        .mapToDouble(Double::doubleValue)
+                        .sum();
+                    
+                    // Lấy dữ liệu kỳ trước để so sánh
+                    LocalDateTime previousEndDate = startDate.minusSeconds(1);
+                    LocalDateTime previousStartDate;
+                    
+                    if (days == 0) {
+                        // Tháng trước
+                        previousStartDate = startDate.minusMonths(1);
+                    } else if (days == 1) {
+                        // Hôm qua
+                        previousStartDate = startDate.minusDays(1);
+                    } else {
+                        // N ngày trước đó
+                        previousStartDate = startDate.minusDays(days);
+                    }
+                    
+                    log.debug("Querying previous period revenue from {} to {}", previousStartDate, previousEndDate);
+                    
+                    // Query doanh thu kỳ trước
+                    List<Object[]> previousRevenueData = adminOrderRepository.findRevenueByDateRange(previousStartDate, previousEndDate);
+                    
+                    double previousPeriodTotal = 0.0;
+                    for (Object[] row : previousRevenueData) {
+                        if (row[1] != null) {
+                            previousPeriodTotal += (Double) row[1];
+                        }
+                    }
+                    
+                    // Tính phần trăm thay đổi
+                    double changePercent = 0.0;
+                    if (previousPeriodTotal > 0) {
+                        changePercent = ((currentPeriodTotal - previousPeriodTotal) / previousPeriodTotal) * 100;
+                    } else if (currentPeriodTotal > 0) {
+                        changePercent = 100.0;
+                    }
+                    
+                    chartData.put("previousPeriodTotal", previousPeriodTotal);
+                    chartData.put("changePercent", changePercent);
+                    
+                    log.info("Revenue chart prepared: {} days, current={}, previous={}, change={}%", 
+                             days, currentPeriodTotal, previousPeriodTotal, String.format("%.1f", changePercent));
                     break;
 
                 case "orders":
@@ -230,7 +331,7 @@ public class AdminDashboardService {
             return chartData;
 
         } catch (Exception e) {
-            log.error("Lỗi khi lấy dữ liệu biểu đồ {}", chartType, e);
+            log.error("Lỗi khi lấy dữ liệu biểu đồ {}: {}", chartType, e.getMessage(), e);
             return Map.of("error", "Không thể lấy dữ liệu biểu đồ");
         }
     }

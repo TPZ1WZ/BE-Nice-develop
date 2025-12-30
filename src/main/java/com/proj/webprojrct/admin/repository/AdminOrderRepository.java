@@ -99,22 +99,23 @@ public interface AdminOrderRepository extends JpaRepository<Order, Long> {
                      "ORDER BY DAY(o.createdAt)")
        List<Object[]> calculateDailyRevenueInMonth(@Param("year") int year, @Param("month") int month);
 
-       // Tính tổng doanh thu từ đơn hàng (đã xác nhận, đang giao, hoàn thành) - sử
-       // dụng finalAmount
-       @Query("SELECT SUM(o.finalAmount) FROM Order o WHERE LOWER(o.status) IN ('completed', 'shipping', 'confirmed')")
+       // Tính tổng doanh thu từ đơn hàng (chỉ đơn đã hoàn thành)
+       // Sử dụng finalAmount: số tiền thực tế khách trả (đã trừ giảm giá, đã cộng phí ship)
+       @Query("SELECT SUM(o.finalAmount) FROM Order o WHERE LOWER(o.status) = 'completed'")
        Double calculateTotalRevenue();
 
-       // Tính tổng doanh thu trong khoảng thời gian
+       // Tính tổng doanh thu trong khoảng thời gian (chỉ tính đơn completed)
        @Query("SELECT SUM(o.finalAmount) FROM Order o WHERE " +
-                     "LOWER(o.status) IN ('completed', 'shipping', 'confirmed') AND " +
+                     "LOWER(o.status) = 'completed' AND " +
                      "o.createdAt BETWEEN :startDate AND :endDate")
        Double calculateRevenueInPeriod(@Param("startDate") LocalDateTime startDate,
                      @Param("endDate") LocalDateTime endDate);
 
        // Tính tổng doanh thu theo tháng cụ thể (cho tính growth)
+       // CHỈ tính đơn completed
        @Query("SELECT SUM(o.finalAmount) FROM Order o WHERE " +
                      "YEAR(o.createdAt) = :year AND MONTH(o.createdAt) = :month AND " +
-                     "LOWER(o.status) IN ('completed', 'shipping', 'confirmed')")
+                     "LOWER(o.status) = 'completed'")
        Double calculateMonthlyRevenueValue(@Param("year") int year, @Param("month") int month);
 
        // Tính giá trị đơn hàng trung bình
@@ -139,6 +140,13 @@ public interface AdminOrderRepository extends JpaRepository<Order, Long> {
        // Đếm tổng số đơn hàng trong tháng
        @Query("SELECT COUNT(o) FROM Order o WHERE YEAR(o.createdAt) = :year AND MONTH(o.createdAt) = :month")
        Long countMonthlyOrders(@Param("year") int year, @Param("month") int month);
+
+       // Đếm số đơn hàng trong khoảng thời gian (chỉ đơn completed)
+       @Query("SELECT COUNT(o) FROM Order o WHERE " +
+                     "LOWER(o.status) = 'completed' AND " +
+                     "o.createdAt BETWEEN :startDate AND :endDate")
+       Long countOrdersInPeriod(@Param("startDate") LocalDateTime startDate,
+                     @Param("endDate") LocalDateTime endDate);
 
        // Tìm top khách hàng theo tổng giá trị đơn hàng
        @Query("SELECT o.user.id, SUM(o.totalAmount), COUNT(o) FROM Order o " +
@@ -181,10 +189,10 @@ public interface AdminOrderRepository extends JpaRepository<Order, Long> {
         * Lấy doanh thu theo ngày trong khoảng thời gian
         * Trả về: [Date (YYYY-MM-DD), Total Revenue]
         */
-       @Query("SELECT CAST(o.createdAt AS date), SUM(o.totalAmount) " +
+       @Query("SELECT CAST(o.createdAt AS date), SUM(o.finalAmount) " +
                      "FROM Order o " +
                      "WHERE o.createdAt >= :startDate AND o.createdAt < :endDate " +
-                     "AND LOWER(o.status) IN ('completed', 'shipping') " +
+                     "AND LOWER(o.status) = 'completed' " +
                      "GROUP BY CAST(o.createdAt AS date) " +
                      "ORDER BY CAST(o.createdAt AS date) ASC")
        List<Object[]> findRevenueByDateRange(@Param("startDate") LocalDateTime startDate,

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,8 +161,9 @@ public class AdminOrderRestController {
                         m.put("quantity", i.getQuantity());
                         m.put("size", i.getSize());
                         m.put("totalPrice", i.getProductPrice() * i.getQuantity());
-                        m.put("imageUrl", i.getProduct().getImages() != null && !i.getProduct().getImages().isEmpty() 
-                            ? i.getProduct().getImages().get(0) : "");
+                        m.put("productId", i.getProduct().getId());
+                        // Trả về productImages dạng array cho frontend
+                        m.put("productImages", i.getProduct().getImages() != null ? i.getProduct().getImages() : new ArrayList<>());
                         return m;
                     }).toList();
 
