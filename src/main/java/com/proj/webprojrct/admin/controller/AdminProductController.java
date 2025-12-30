@@ -282,10 +282,11 @@ public class AdminProductController {
 
     /**
      * Thống kê sản phẩm (Android app cần endpoint này)
-     * GET /api/admin/products/stats
+     * GET /api/admin/products/stats?threshold=10
      */
     @GetMapping("/stats")
-    public ResponseEntity<ProductStatsDTO> getProductStats() {
+    public ResponseEntity<ProductStatsDTO> getProductStats(
+            @RequestParam(defaultValue = "10") int threshold) {
         // ĐẾM CHỈ SẢN PHẨM ACTIVE (isDelete = false) cho stats
         List<Product> activeProducts = adminProductRepository.findByIsDeleteFalse();
         
@@ -294,8 +295,11 @@ public class AdminProductController {
                 .filter(p -> p.getStock() == null || p.getStock() == 0)
                 .count();
         int lowStock = (int) activeProducts.stream()
-                .filter(p -> p.getStock() != null && p.getStock() > 0 && p.getStock() < 10)
+                .filter(p -> p.getStock() != null && p.getStock() > 0 && p.getStock() <= threshold)
                 .count();
+        
+        log.info("✅ Product stats calculated with threshold={}: total={}, lowStock={}, outOfStock={}",
+                threshold, total, lowStock, outOfStock);
         
         ProductStatsDTO stats = ProductStatsDTO.builder()
                 .total(total)
