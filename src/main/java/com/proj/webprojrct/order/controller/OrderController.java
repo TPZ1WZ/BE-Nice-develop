@@ -126,18 +126,101 @@ public class OrderController {
     @GetMapping("/vnpay/callback")
     public ResponseEntity<String> vnpayCallback(
             @RequestParam Map<String, String> params) {
-        // TODO: Implement VNPay callback handling
+        
+        System.out.println("💳 [VNPAY CALLBACK] Received payment callback");
+        System.out.println("📝 [VNPAY CALLBACK] Params: " + params);
+        
         String responseCode = params.get("vnp_ResponseCode");
         String txnRef = params.get("vnp_TxnRef");
+        String amount = params.get("vnp_Amount");
+        String orderInfo = params.get("vnp_OrderInfo");
+        
+        String html;
         
         if ("00".equals(responseCode)) {
-            // Payment successful
-            // Update order status to COMPLETED
-            return ResponseEntity.ok("Payment successful. Order confirmed.");
+            System.out.println("✅ [VNPAY CALLBACK] Payment successful - TxnRef: " + txnRef);
+            
+            // ✅ Update order status to COMPLETED and clear cart
+            try {
+                orderService.updateOrderStatusByTxnRef(txnRef);
+                System.out.println("✅ [VNPAY CALLBACK] Order updated and cart cleared");
+            } catch (Exception e) {
+                System.err.println("❌ [VNPAY CALLBACK] Failed to update order: " + e.getMessage());
+            }
+            
+            html = "<!DOCTYPE html>" +
+                   "<html><head>" +
+                   "<meta charset='UTF-8'>" +
+                   "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                   "<title>Thanh toán thành công</title>" +
+                   "<style>" +
+                   "body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }" +
+                   ".container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }" +
+                   ".success-icon { font-size: 80px; color: #4CAF50; margin-bottom: 20px; }" +
+                   "h1 { color: #4CAF50; margin-bottom: 10px; }" +
+                   "p { color: #666; margin: 10px 0; }" +
+                   ".detail { background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: left; }" +
+                   ".detail-row { display: flex; justify-content: space-between; margin: 8px 0; }" +
+                   ".label { color: #888; }" +
+                   ".value { font-weight: bold; color: #333; }" +
+                   ".btn { display: inline-block; padding: 12px 30px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; cursor: pointer; border: none; }" +
+                   "</style>" +
+                   "</head><body>" +
+                   "<div class='container'>" +
+                   "<div class='success-icon'>✅</div>" +
+                   "<h1>Thanh toán thành công!</h1>" +
+                   "<p>Đơn hàng của bạn đã được xác nhận</p>" +
+                   "<div class='detail'>" +
+                   "<div class='detail-row'><span class='label'>Mã giao dịch:</span><span class='value'>" + txnRef + "</span></div>" +
+                   "<div class='detail-row'><span class='label'>Số tiền:</span><span class='value'>" + (amount != null ? String.format("%,.0f VNĐ", Double.parseDouble(amount)/100) : "N/A") + "</span></div>" +
+                   "<div class='detail-row'><span class='label'>Thông tin:</span><span class='value'>" + (orderInfo != null ? orderInfo : "N/A") + "</span></div>" +
+                   "</div>" +
+                   "<p style='color: #888; font-size: 14px;'>Vui lòng quay lại app để xem đơn hàng</p>" +
+                   "<p style='color: #4CAF50; font-weight: bold;'>Bạn có thể đóng trang này</p>" +
+                   "</div>" +
+                   "</body></html>";
         } else {
-            // Payment failed
-            // Update order status to CANCELED or PENDING
-            return ResponseEntity.ok("Payment failed. Please try again.");
+            System.out.println("❌ [VNPAY CALLBACK] Payment failed - Code: " + responseCode + " - TxnRef: " + txnRef);
+            
+            html = "<!DOCTYPE html>" +
+                   "<html><head>" +
+                   "<meta charset='UTF-8'>" +
+                   "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                   "<title>Thanh toán thất bại</title>" +
+                   "<style>" +
+                   "body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }" +
+                   ".container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }" +
+                   ".error-icon { font-size: 80px; color: #f44336; margin-bottom: 20px; }" +
+                   "h1 { color: #f44336; margin-bottom: 10px; }" +
+                   "p { color: #666; margin: 10px 0; }" +
+                   ".detail { background: #fff3f3; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: left; border-left: 4px solid #f44336; }" +
+                   ".btn { display: inline-block; padding: 12px 30px; background: #f44336; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }" +
+                   "</style>" +
+                   "<script>" +
+                   "setTimeout(function() { " +
+                   "  var userAgent = navigator.userAgent.toLowerCase();" +
+                   "  if (userAgent.indexOf('nike_fe') > -1) {" +
+                   "    window.location.href = 'nike://payment-failed';" +
+                   "  }" +
+                   "}, 3000);" +
+                   "</script>" +
+                   "</head><body>" +
+                   "<div class='container'>" +
+                   "<div class='error-icon'>❌</div>" +
+                   "<h1>Thanh toán thất bại</h1>" +
+                   "<p>Giao dịch không thành công</p>" +
+                   "<div class='detail'>" +
+                   "<p><strong>Mã lỗi:</strong> " + responseCode + "</p>" +
+                   "<p><strong>Mã giao dịch:</strong> " + txnRef + "</p>" +
+                   "</div>" +
+                   "<p style='color: #888; font-size: 14px;'>Vui lòng thử lại hoặc chọn phương thức thanh toán khác</p>" +
+                   "<a href='intent://payment-failed#Intent;scheme=nike;package=com.example.nike_fe;end' class='btn'>Quay lại App</a>" +
+                   "</div>" +
+                   "</body></html>";
         }
+        
+        return ResponseEntity.ok()
+                .header("Content-Type", "text/html; charset=UTF-8")
+                .body(html);
     }
 }

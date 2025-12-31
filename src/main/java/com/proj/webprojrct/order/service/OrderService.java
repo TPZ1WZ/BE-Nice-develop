@@ -81,27 +81,21 @@ public class OrderService {
         System.out.println("  - Coupon Code: " + couponCode);
         System.out.println("  - Customer Note: " + customerNote);
         
-        // 🔒 Kiểm tra xem có order nào đang WAITING_FOR_PAYMENT không (tránh duplicate order khi click nhiều lần)
+        // 🔒 Hủy các order cũ đang WAITING_FOR_PAYMENT (tránh duplicate order)
         if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
-            var existingOrder = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
+            var existingOrders = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
                 .stream()
                 .filter(o -> "WAITING_FOR_PAYMENT".equals(o.getStatus()))
                 .filter(o -> o.getCreatedAt().isAfter(java.time.LocalDateTime.now().minusMinutes(15))) // Order trong vòng 15 phút
-                .findFirst();
+                .toList();
             
-            if (existingOrder.isPresent()) {
-                var order = existingOrder.get();
-                System.out.println("⚠️ [ORDER SERVICE] Found existing WAITING_FOR_PAYMENT order #" + order.getId());
-                System.out.println("  - Returning existing VNPay URL instead of creating new order");
-                
-                // Tạo lại payment URL với transaction ID hiện có
-                var vnPayOrder = paymentService.createPayment(
-                    new PaymentService.VnPayBody(
-                        order.getFinalAmount(), 
-                        "Thanh toan don hang #" + order.getId()
-                    )
-                );
-                return vnPayOrder.getPaymentUrl();
+            if (!existingOrders.isEmpty()) {
+                System.out.println("⚠️ [ORDER SERVICE] Found " + existingOrders.size() + " existing WAITING_FOR_PAYMENT orders");
+                for (var oldOrder : existingOrders) {
+                    System.out.println("  - Cancelling order #" + oldOrder.getId());
+                    oldOrder.setStatus("CANCELLED");
+                    orderRepository.save(oldOrder);
+                }
             }
         }
         
@@ -390,5 +384,57 @@ public class OrderService {
         }
         
         return toOrderDTO(order, user);
+    }
+    
+    /**
+     * Cập nhật trạng thái đơn hàng và xóa giỏ hàng sau khi thanh toán VNPay thành công
+     */
+    public void updateOrderStatusByTxnRef(String txnRef) {
+        System.out.println("🔄 [ORDER SERVICE] Updating order status by TxnRef: " + txnRef);
+        
+        try {
+            // Tìm order theo txnId
+            Optional<Order> orderOpt = orderRepository.findAll().stream()
+                    .filter(o -> txnRef.equals(o.getTxnId()))
+                    .findFirst();
+            
+            if (orderOpt.isEmpty()) {
+                System.out.println("❌ [ORDER SERVICE] Order not found with TxnRef: " + txnRef);
+                return;
+            }
+            
+            Order order = orderOpt.get();
+            System.out.println("✅ [ORDER SERVICE] Found order ID: " + order.getId());
+            System.out.println("  - Current status: " + order.getStatus());
+            System.out.println("  - User ID: " + order.getUser().getId());
+            
+            // Cập nhật trạng thái đơn hàng sang PENDING (chờ xác nhận từ admin)
+            order.setStatus("PENDING");
+            orderRepository.save(order);
+            System.out.println("✅ [ORDER SERVICE] Order status updated to PENDING (waiting for confirmation)");
+            
+            // Tạo thông báo thanh toán thành công
+            notificationService.createOrderNotification(
+                order.getUser().getId(),
+                order.getId(),
+                "PENDING",
+                "Đơn hàng #" + order.getId() + " đã thanh toán thành công. Đang chờ xác nhận từ cửa hàng."
+            );
+            
+            // Xóa giỏ hàng của user (nếu có)
+            Optional<Cart> cartOpt = cartRepository.findByUserId(order.getUser().getId());
+            if (cartOpt.isPresent()) {
+                Cart cart = cartOpt.get();
+                System.out.println("🗑️ [ORDER SERVICE] Deleting cart ID: " + cart.getId());
+                cartRepository.delete(cart);
+                System.out.println("✅ [ORDER SERVICE] Cart deleted successfully");
+            } else {
+                System.out.println("ℹ️ [ORDER SERVICE] No cart found for user");
+            }
+            
+        } catch (Exception e) {
+            System.out.println("❌ [ORDER SERVICE] Error updating order: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

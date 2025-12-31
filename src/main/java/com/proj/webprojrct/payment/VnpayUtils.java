@@ -31,14 +31,14 @@ public class VnpayUtils {
     public static final String VNP_COMMAND_VALUE = "pay";
     public static final String VNP_COMMAND_QUERY_VALUE = "querydr";
     public static final String VNP_CURR_CODE_VALUE = "VND";
-    public static final String VNP_TMN_CODE_VALUE = "YHTY85E3"; // ✅ Merchant ID mới từ VNPay
-    public static final String VNP_SECRET_KEY_VALUE = "74SUL4SPEIN5OIUJQZ5UZ5IEDCUVLO37"; // ✅ Secret Key mới từ VNPay
+    public static final String VNP_TMN_CODE_VALUE = "36F753OH"; 
+    public static final String VNP_SECRET_KEY_VALUE = "YLUW4WQAAC3PFTUILOMLBEKAXCPB2EFT";
     public static final String VNP_ORDER_TYPE_VALUE = "other";
     public static final String VNP_LOCALE_VALUE = "vn";
     public static final String VNP_PAY_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static final String VNP_QUERY_URL = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
     public static final String ALGORITHM_HMAC = "HmacSHA512";
-    public static final String VN_PAY_RETURN_URL = "http://localhost:8080/orders/vnpay/callback";
+    public static final String VN_PAY_RETURN_URL = "http://10.0.2.2:8080/api/v1/orders/vnpay/callback"; // ✅ Thêm /api/v1 prefix
     public static final String TIME_ZONE_DEFAULT = "Etc/GMT+7";
     public static final String DATE_FORMAT = "yyyyMMddHHmmss";
     public static final int DEFAULT_TIME_END = 15;
