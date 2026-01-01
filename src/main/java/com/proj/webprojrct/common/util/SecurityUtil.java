@@ -73,7 +73,7 @@ public class SecurityUtil {
     }
 
     /**
-     * Get current user email from JWT token
+     * Get current user email from JWT token or UserDetails
      * @return email or null
      */
     public static String getCurrentUserEmail() {
@@ -85,11 +85,18 @@ public class SecurityUtil {
 
         Object principal = authentication.getPrincipal();
         
+        // If principal is JWT token
         if (principal instanceof Jwt jwt) {
             return jwt.getClaimAsString("email");
         }
         
-        return null;
+        // If principal is UserDetails, return username (which is email in our case)
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        
+        // Fallback to authentication name
+        return authentication.getName();
     }
 
     /**
