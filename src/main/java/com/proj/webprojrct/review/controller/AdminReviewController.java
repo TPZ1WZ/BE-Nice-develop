@@ -1,6 +1,7 @@
 package com.proj.webprojrct.review.controller;
 
 import com.proj.webprojrct.review.dto.ReviewDTO;
+import com.proj.webprojrct.review.entity.Review;
 import com.proj.webprojrct.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -15,6 +16,16 @@ import com.proj.webprojrct.review.dto.CreateReplyRequest;
 import com.proj.webprojrct.review.dto.ReviewReplyDTO;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.proj.webprojrct.user.entity.User;
+// We might need UserService to ban user, but for now we'll assume we can update User entity directly via repository in Service 
+// or assume a AdminUserController exists. The requirement is to add "Lock account" functionality safely.
+// Since I don't have UserService injected effectively in ReviewService (I have UserRepository access though User entity relationships), 
+// and I cannot easily mod UserService without seeing it, I'll do a simple workaround:
+// I'll add the ban logic in ReviewService if not already there? 
+// Wait, I updated ReviewService but I didn't add `banUser`. I missed that step in my detailed thought process for ReviewService update!
+// I need that `banUser` method in ReviewService or I need to inject UserService here.
+// I will check if I can just inject UserRepository here and do it.
+import com.proj.webprojrct.user.repository.UserRepository;
+
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
@@ -28,6 +39,7 @@ import org.springframework.data.domain.Page;
 public class AdminReviewController {
 
     private final ReviewService reviewService;
+    private final UserRepository userRepository; // Direct access for ban function simplicity
 
     @Operation(summary = "Get all reviews (GET)", description = "Get reviews with query params for admin")
     @GetMapping
@@ -44,41 +56,25 @@ public class AdminReviewController {
     @Operation(summary = "Get review statistics", description = "Get counts of total, pending, approved reviews")
     @GetMapping("/statistics")
     public ResponseEntity<Map<String, Object>> getReviewStatistics() {
-        // Implement stats logic manually or adding service method
-        // For now, let's roughly count
-        // Note: This is efficient only if repository supports count queries.
-        // I will assume for now I can implement a simple stats map.
-        // Actually, ReviewService doesn't have getGlobalStats.
-        // I'll add a placeholder or simple implementation.
-        long total = 0; // reviewService.countAll();
-        long pending = reviewService.getPendingReviews().size();
-        long approved = 0; // reviewService.countApproved();
-
-        // Better to add service method, but for speed I will leave 0s or try to fetch.
-        // Safe play: Return dummy or implement properly.
-        // Let's implement global stats in Service next if needed.
-        return ResponseEntity.ok(Map.of(
-                "totalReviews", (double) total,
-                "pendingReviews", (double) pending,
-                "approvedReviews", (double) approved));
+        return ResponseEntity.ok(reviewService.getReviewStatistics());
     }
 
     @Operation(summary = "Approve review", description = "Admin: Approve a pending review")
     @PatchMapping("/{reviewId}/approve")
-    public ResponseEntity<Map<String, Object>> approveReview(@PathVariable Long reviewId) {
-        reviewService.approveReview(reviewId);
-        return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "message", "Review approved successfully"));
+    public ResponseEntity<ReviewDTO> approveReview(@PathVariable Long reviewId) {
+        return ResponseEntity.ok(reviewService.approveReview(reviewId));
     }
 
-    @Operation(summary = "Reject/Hide review", description = "Hide a review from public")
-    @PutMapping("/{id}/reject") // Mapping reject to hide
-    public ResponseEntity<ReviewDTO> rejectReview(
+    @Operation(summary = "Reject/Hide review", description = "Hide a review from public with reason")
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<Map<String, Object>> rejectReview(
             @PathVariable Long id,
             @RequestBody(required = false) Map<String, String> body) {
-        // Body might contain reason, but hideReview service doesn't use it yet.
-        return ResponseEntity.ok(reviewService.hideReview(id));
+        String reason = (body != null) ? body.get("reason") : "Rejected by admin";
+        reviewService.rejectReview(id, reason);
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Review rejected"));
     }
 
     @Operation(summary = "Delete review", description = "Admin: Delete a review permanently")
@@ -91,13 +87,14 @@ public class AdminReviewController {
     }
 
     @Operation(summary = "Reply to review", description = "Admin reply")
-    @PostMapping("/{id}/admin-reply") // Mapping admin-reply to reply
-    public ResponseEntity<ReviewReplyDTO> replyToReview(
+    @PostMapping("/{id}/admin-reply")
+    public ResponseEntity<Map<String, Object>> replyToReview(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body,
-            @AuthenticationPrincipal User user) {
-        CreateReplyRequest request = new CreateReplyRequest(body.get("content"));
-        return ResponseEntity.ok(reviewService.createReply(id, request, user));
+            @RequestBody Map<String, String> body) {
+        reviewService.addAdminReply(id, body.get("content"));
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Reply added"));
     }
 
     @Operation(summary = "Get pending reviews", description = "Admin: Get all pending reviews awaiting approval")
@@ -127,5 +124,46 @@ public class AdminReviewController {
                 "status", "success",
                 "message", count + " reviews deleted successfully",
                 "count", count));
+    }
+
+    // --- NEW MODERATION ENDPOINTS ---
+
+    @Operation(summary = "Ban User", description = "Admin: Ban a user from reviewing and login")
+    @PostMapping("/users/{userId}/ban")
+    public ResponseEntity<Map<String, Object>> banUser(
+            @PathVariable Long userId,
+            @RequestBody Map<String, Object> body) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setIsBanned(true);
+        user.setBanReason((String) body.getOrDefault("reason", "Violation of terms"));
+        // user.setBanUntil() // Optional
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "User banned successfully"));
+    }
+
+    @Operation(summary = "Delete All User Reviews", description = "Admin: Clean up all reviews from a spammer")
+    @DeleteMapping("/users/{userId}/reviews")
+    public ResponseEntity<Map<String, Object>> deleteUserReviews(@PathVariable Long userId) {
+        reviewService.deleteAllReviewsByUser(userId);
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "All reviews from user deleted"));
+    }
+
+    @Operation(summary = "Restore Review", description = "Admin: Restore a blocked/hidden review back to SAFE status")
+    @PatchMapping("/{reviewId}/restore")
+    public ResponseEntity<Map<String, Object>> restoreReview(@PathVariable Long reviewId) {
+        Review restored = reviewService.restoreReview(reviewId);
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Review restored successfully",
+                "review", restored));
     }
 }

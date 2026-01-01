@@ -51,7 +51,19 @@ public class User extends BaseEntity implements UserDetails {
     @Builder.Default
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
-    
+
+    // --- MODERATION FIELDS ---
+    @Builder.Default
+    @Column(name = "is_banned", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isBanned = false;
+
+    @Column(name = "ban_reason", columnDefinition = "TEXT")
+    private String banReason;
+
+    @Column(name = "ban_until")
+    private LocalDateTime banUntil;
+    // -------------------------
+
     @Column(length = 1000)
     private String refreshToken;
 

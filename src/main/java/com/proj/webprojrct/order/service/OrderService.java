@@ -176,6 +176,11 @@ public class OrderService {
             var orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(item.getProduct());
+            
+            // Lưu snapshot thông tin sản phẩm tại thời điểm mua
+            orderItem.setProductName(item.getProduct().getName());
+            orderItem.setProductImage(item.getProduct().getImages().isEmpty() ? null : item.getProduct().getImages().get(0));
+            
             orderItem.setQuantity(item.getQuantity());
             orderItem.setProductPrice(item.getProductPrice());
             orderItem.setTotalPrice(item.getProductPrice() * item.getQuantity()); // Thành tiền = đơn giá * số lượng
@@ -271,8 +276,9 @@ public class OrderService {
             return OrderItemDTO.builder()
                     .id(item.getId())
                     .productId(item.getProduct().getId())
-                    .productName(item.getProduct().getName())
-                    .productImages(item.getProduct().getImages())
+                    // Sử dụng thông tin snapshot tại thời điểm mua, không lấy từ Product hiện tại
+                    .productName(item.getProductName())
+                    .productImages(List.of(item.getProductImage()))
                     .quantity(item.getQuantity())
                     .productPrice(item.getProductPrice())
                     .totalPrice(item.getTotalPrice())

@@ -1,5 +1,6 @@
 package com.proj.webprojrct.review.dto;
 
+import com.proj.webprojrct.review.entity.ReviewStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +25,10 @@ public class ReviewDTO {
     private List<String> images;
     private LocalDateTime createdAt;
     private boolean approved;
+
+    // Admin/Moderation fields
+    private ReviewStatus reviewStatus;
+    private String adminNote;
+    private String aiSuggestion;
+    private List<String> aiReasons;
 }

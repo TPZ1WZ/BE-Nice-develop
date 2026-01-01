@@ -49,6 +49,7 @@ public class AdminProductController {
                 .name(product.getName())
                 .sku("SKU-" + product.getId()) // Generate SKU from ID
                 .category(product.getCategory() != null ? product.getCategory().getName() : "Uncategorized")
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null) // Add categoryId
                 .price(product.getPrice())
                 .salePrice(null) // Product entity không có field này
                 .stock(product.getStock())
@@ -119,17 +120,25 @@ public class AdminProductController {
         product.setName(dto.getName());
         // SKU không có trong Product entity - bỏ qua
         
-        // Xử lý Category
-        if (dto.getCategory() != null) {
-            Category category = categoryRepository.findByNameIgnoreCase(dto.getCategory())
-                    .orElseGet(() -> {
-                        // Nếu chưa có category, tạo mới
-                        Category newCat = new Category();
-                        newCat.setName(dto.getCategory());
-                        newCat.setIsDelete(false);
-                        return categoryRepository.save(newCat);
-                    });
+        // Xử lý Category - ưu tiên dùng categoryId nếu có
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found with ID: " + dto.getCategoryId()));
             product.setCategory(category);
+        } else if (dto.getCategory() != null) {
+            // Fallback: tìm category đầu tiên có tên khớp và không bị xóa
+            List<Category> categories = categoryRepository.findAll().stream()
+                    .filter(c -> !c.getIsDelete() && c.getName().equalsIgnoreCase(dto.getCategory()))
+                    .toList();
+            if (!categories.isEmpty()) {
+                product.setCategory(categories.get(0));
+            } else {
+                // Nếu không tìm thấy, tạo mới
+                Category newCat = new Category();
+                newCat.setName(dto.getCategory());
+                newCat.setIsDelete(false);
+                product.setCategory(categoryRepository.save(newCat));
+            }
         }
         
         product.setDescription(dto.getDescription());
@@ -168,16 +177,19 @@ public class AdminProductController {
                     existingProduct.setName(dto.getName());
                     // SKU không có trong Product entity - bỏ qua
                     
-                    // Xử lý Category
-                    if (dto.getCategory() != null) {
-                        Category category = categoryRepository.findByNameIgnoreCase(dto.getCategory())
-                                .orElseGet(() -> {
-                                    Category newCat = new Category();
-                                    newCat.setName(dto.getCategory());
-                                    newCat.setIsDelete(false);
-                                    return categoryRepository.save(newCat);
-                                });
+                    // Xử lý Category - ưu tiên dùng categoryId nếu có
+                    if (dto.getCategoryId() != null) {
+                        Category category = categoryRepository.findById(dto.getCategoryId())
+                                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + dto.getCategoryId()));
                         existingProduct.setCategory(category);
+                    } else if (dto.getCategory() != null) {
+                        // Fallback: tìm category đầu tiên có tên khớp và không bị xóa
+                        List<Category> categories = categoryRepository.findAll().stream()
+                                .filter(c -> !c.getIsDelete() && c.getName().equalsIgnoreCase(dto.getCategory()))
+                                .toList();
+                        if (!categories.isEmpty()) {
+                            existingProduct.setCategory(categories.get(0));
+                        }
                     }
                     
                     existingProduct.setDescription(dto.getDescription());

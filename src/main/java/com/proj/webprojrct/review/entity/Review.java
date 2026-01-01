@@ -43,6 +43,22 @@ public class Review extends BaseEntity {
     @Builder.Default
     private Boolean approved = false; // Đã được duyệt bởi admin
 
+    // --- MODERATION FIELDS ---
+    @Enumerated(EnumType.STRING)
+    @Column(name = "review_status")
+    private ReviewStatus reviewStatus; // SAFE, WARNING, BLOCK
+
+    @Column(name = "admin_note", columnDefinition = "TEXT")
+    private String adminNote;
+
+    @Column(name = "ai_suggestion")
+    private String aiSuggestion; // approve | hide | require_review
+
+    @Column(name = "ai_reasons", columnDefinition = "text[]")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    private List<String> aiReasons;
+    // -------------------------
+
     @Column(name = "like_count")
     private Integer likeCount; // Số lượt đánh giá hữu ích
 
@@ -56,7 +72,7 @@ public class Review extends BaseEntity {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")
     private List<ReviewReply> replies = new ArrayList<>();
-    
+
     // Helper method for service layer
     public boolean isApproved() {
         return approved != null && approved;
