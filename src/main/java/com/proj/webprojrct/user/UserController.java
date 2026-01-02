@@ -178,14 +178,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    // @ApiResponse(responseCode = "200", description = "Thành công")
-    // @PatchMapping(value = "/users/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // public ResponseEntity<UserResponse> updateUserAvatar(
-    //         @RequestPart(required = false) MultipartFile avatar) throws IOException {
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     UserResponse response = this.userService.handleUserAvtUpdateRequest(avatar, authentication);
-    //     return ResponseEntity.status(HttpStatus.OK).body(response);
-    // }
+    @ApiResponse(responseCode = "200", description = "Thành công")
+    @PatchMapping(value = "/users/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> updateUserAvatar(
+            @RequestPart(required = false) MultipartFile avatar) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserResponse response = this.userService.handleUserAvtUpdateRequest(avatar, authentication);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
     // @GetMapping("/user/profile")
     // public ResponseEntity<UserResponse> getUserProfile(Authentication authentication) {
     //     String userName = authentication.getName();

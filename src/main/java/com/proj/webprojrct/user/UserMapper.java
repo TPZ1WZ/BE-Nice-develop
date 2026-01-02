@@ -23,7 +23,6 @@ public interface UserMapper {
 
     @Mapping(target = "passwordHash", source = "passwordHash")
     @Mapping(target = "phone", source = "phoneNumber") 
-    @Mapping(target = "avatarUrl", ignore = true)
     @Mapping(target = "refreshToken", ignore = true)
     User toEntity(UserCreateRequest user);
 
