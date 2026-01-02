@@ -8,6 +8,7 @@ import com.proj.webprojrct.notification.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "Notification", description = "API quản lý thông báo")
 public class NotificationController {
 
@@ -82,7 +84,10 @@ public class NotificationController {
                description = "Trả về số lượng thông báo chưa đọc để hiển thị badge")
     public ResponseEntity<Map<String, Long>> countUnreadNotifications() {
         Long userId = SecurityUtil.getCurrentUserId();
+        log.info("📊 [COUNT-UNREAD] API called for userId: {}", userId);
+        
         Long count = notificationService.countUnreadNotifications(userId);
+        log.info("📊 [COUNT-UNREAD] Returning count: {} for userId: {}", count, userId);
         
         return ResponseEntity.ok(Map.of("count", count));
     }

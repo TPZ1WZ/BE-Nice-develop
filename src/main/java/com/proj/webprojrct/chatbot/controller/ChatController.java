@@ -4,6 +4,7 @@ import com.proj.webprojrct.chatbot.dto.ChatRequest;
 import com.proj.webprojrct.chatbot.dto.ChatResponse;
 import com.proj.webprojrct.chatbot.entity.ChatConversation;
 import com.proj.webprojrct.chatbot.entity.ChatMessage;
+import com.proj.webprojrct.chatbot.service.DataSeedService;
 import com.proj.webprojrct.chatbot.service.DocumentIngestionService;
 import com.proj.webprojrct.chatbot.service.RAGService;
 import com.proj.webprojrct.common.config.ApiMessage;
@@ -30,6 +31,7 @@ public class ChatController {
 
     private final RAGService ragService;
     private final DocumentIngestionService documentIngestionService;
+    private final DataSeedService dataSeedService;
 
     /**
      * Chat endpoint - main interface for users
@@ -138,8 +140,6 @@ public class ChatController {
 
         return ResponseEntity.ok(response);
     }
-
-    private final com.proj.webprojrct.chatbot.service.DataSeedService dataSeedService;
 
     /**
      * Manual Trigger for Product Seeding (Admin)

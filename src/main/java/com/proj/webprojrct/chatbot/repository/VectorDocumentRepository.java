@@ -2,9 +2,11 @@ package com.proj.webprojrct.chatbot.repository;
 
 import com.proj.webprojrct.chatbot.entity.VectorDocument;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,12 +46,18 @@ public interface VectorDocumentRepository extends JpaRepository<VectorDocument, 
     /**
      * Delete all documents by source
      */
-    void deleteBySource(String source);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM VectorDocument v WHERE v.source = :source")
+    void deleteBySource(@Param("source") String source);
     
     /**
      * Delete all documents by source type
      */
-    void deleteBySourceType(String sourceType);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM VectorDocument v WHERE v.sourceType = :sourceType")
+    void deleteBySourceType(@Param("sourceType") String sourceType);
     
     /**
      * Count documents by source type

@@ -26,6 +26,7 @@ public class AdminOrderRestController {
     private final ProductRepository productRepository;
     private final CouponRepository couponRepository;
     private final NotificationService notificationService;
+    private final com.proj.webprojrct.admin.service.AdminOrderService adminOrderService;
 
     /**
      * Lấy danh sách đơn hàng với filter theo status
@@ -298,6 +299,46 @@ public class AdminOrderRestController {
             "message", "Cập nhật ghi chú thành công",
             "adminNote", adminNote != null ? adminNote : ""
         );
+    }
+    
+    /**
+     * Cập nhật trạng thái đơn hàng
+     * PUT /api/v1/admin/orders/{orderId}/status
+     * Body: {"status": "CONFIRMED"}
+     */
+    @PutMapping("/{orderId}/status")
+    public Map<String, Object> updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody Map<String, String> body) {
+        try {
+            String newStatus = body.get("status");
+            if (newStatus == null || newStatus.trim().isEmpty()) {
+                return Map.of(
+                    "success", false,
+                    "message", "Trạng thái không được để trống"
+                );
+            }
+            
+            boolean success = adminOrderService.updateOrderStatus(orderId, newStatus);
+            
+            if (success) {
+                return Map.of(
+                    "success", true,
+                    "message", "Cập nhật trạng thái đơn hàng thành công",
+                    "newStatus", newStatus.toUpperCase()
+                );
+            } else {
+                return Map.of(
+                    "success", false,
+                    "message", "Không tìm thấy đơn hàng"
+                );
+            }
+        } catch (Exception e) {
+            return Map.of(
+                "success", false,
+                "message", "Lỗi: " + e.getMessage()
+            );
+        }
     }
     
     /**

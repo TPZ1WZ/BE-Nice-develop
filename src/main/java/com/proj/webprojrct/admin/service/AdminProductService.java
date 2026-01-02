@@ -1,9 +1,11 @@
 package com.proj.webprojrct.admin.service;
 
 import com.proj.webprojrct.admin.repository.AdminProductRepository;
+import com.proj.webprojrct.chatbot.listener.ProductEventListener;
 import com.proj.webprojrct.product.entity.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 /**
  * Service xử lý business logic cho quản lý sản phẩm trong admin dashboard
+ * Tự động đồng bộ với Chatbot Vector Database qua Event Listener
  */
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class AdminProductService {
 
     private final AdminProductRepository adminProductRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Lấy tất cả sản phẩm với phân trang
@@ -96,7 +100,11 @@ public class AdminProductService {
                 }
 
                 product.setUpdatedAt(LocalDateTime.now());
-                adminProductRepository.save(product);
+                Product updatedProduct = adminProductRepository.save(product);
+                
+                // 🔔 Publish event để chatbot tự động cập nhật
+                eventPublisher.publishEvent(new ProductEventListener.ProductUpdatedEvent(updatedProduct));
+                
                 log.info("Cập nhật sản phẩm ID: {} thành công", productId);
                 return true;
             }
@@ -118,6 +126,10 @@ public class AdminProductService {
             Optional<Product> productOpt = adminProductRepository.findById(productId);
             if (productOpt.isPresent()) {
                 adminProductRepository.deleteById(productId);
+                
+                // 🔔 Publish event để chatbot tự động xóa
+                eventPublisher.publishEvent(new ProductEventListener.ProductDeletedEvent(productId));
+                
                 log.info("Xóa sản phẩm ID: {} thành công", productId);
                 return true;
             }
@@ -180,6 +192,10 @@ public class AdminProductService {
             product.setCreatedAt(LocalDateTime.now());
             product.setUpdatedAt(LocalDateTime.now());
             Product savedProduct = adminProductRepository.save(product);
+            
+            // 🔔 Publish event để chatbot tự động index
+            eventPublisher.publishEvent(new ProductEventListener.ProductCreatedEvent(savedProduct));
+            
             log.info("Tạo sản phẩm mới thành công với ID: {}", savedProduct.getId());
             return savedProduct;
         } catch (Exception e) {

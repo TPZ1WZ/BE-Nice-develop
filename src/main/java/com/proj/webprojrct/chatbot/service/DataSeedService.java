@@ -66,6 +66,15 @@ public class DataSeedService { // REMOVED implements CommandLineRunner to disabl
         log.info("📦 Seeding product data...");
         Map<String, Object> result = new HashMap<>();
 
+        // 🗑️ XÓA DỮ LIỆU CŨ TRƯỚC KHI SEED LẠI (tránh trùng lặp)
+        try {
+            log.info("🗑️ Deleting old product documents...");
+            documentIngestionService.deleteBySourceType("product");
+            log.info("✅ Old product documents deleted");
+        } catch (Exception e) {
+            log.warn("⚠️ Could not delete old products: {}", e.getMessage());
+        }
+
         List<Product> products = productRepository.findAll();
         result.put("found", products.size());
         log.info("Found {} products to index", products.size());
@@ -217,6 +226,15 @@ public class DataSeedService { // REMOVED implements CommandLineRunner to disabl
                 "Tất cả sản phẩm Nike chính hãng đều được bảo hành 6 tháng. " +
                         "Bảo hành bao gồm: lỗi keo đế, sứt chỉ may, lỗi sản xuất. " +
                         "Không bảo hành: hư hỏng do sử dụng không đúng cách, mòn tự nhiên.");
+
+        // Thông tin về số lượng sản phẩm (tự động cập nhật)
+        long activeProducts = productRepository.findByIsDeleteAndCategory_IsDeleteFalse(false).size();
+        faqs.put("Số lượng sản phẩm hiện có",
+                String.format("Nike Store Vietnam hiện đang có **%d sản phẩm** đa dạng trong kho hàng của chúng tôi. " +
+                        "Tất cả sản phẩm đều là hàng chính hãng Nike, được nhập khẩu trực tiếp. " +
+                        "Bạn có thể tham khảo và lựa chọn từ nhiều dòng giày khác nhau như Air Force, Air Jordan, Air Max, Dunk, Pegasus và nhiều dòng khác. " +
+                        "Để xem chi tiết từng sản phẩm, bạn có thể hỏi tôi về dòng giày cụ thể hoặc mức giá phù hợp với ngân sách của bạn.", 
+                        activeProducts));
 
         // === KNOWLEDGE BASE CHUNG VỀ GIÀY NIKE ===
         
@@ -396,5 +414,41 @@ public class DataSeedService { // REMOVED implements CommandLineRunner to disabl
         }
 
         log.info("✅ Indexed {} policies", indexed);
+    }
+
+    /**
+     * Sync single product to vector store (auto-update)
+     * Call this method when creating/updating a product
+     */
+    public void syncSingleProduct(Product product) {
+        try {
+            if (product == null || product.isDelete()) {
+                return;
+            }
+
+            String productText = buildProductDescription(product);
+            documentIngestionService.ingestText(
+                    productText,
+                    "product-" + product.getId(),
+                    "product",
+                    null);
+            
+            log.info("✅ Synced product {} to chatbot", product.getId());
+        } catch (Exception e) {
+            log.error("❌ Error syncing product {}: {}", product.getId(), e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Remove single product from vector store (when deleted)
+     * Call this method when soft-deleting a product
+     */
+    public void removeSingleProduct(Long productId) {
+        try {
+            documentIngestionService.deleteBySource("product-" + productId);
+            log.info("✅ Removed product {} from chatbot", productId);
+        } catch (Exception e) {
+            log.error("❌ Error removing product {}: {}", productId, e.getMessage(), e);
+        }
     }
 }

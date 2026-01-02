@@ -222,7 +222,10 @@ public class OrderService {
             user.getId(),
             newOrder.getId(),
             "PENDING",
-            "Đơn hàng #" + newOrder.getId() + " đã được tạo thành công. Đang chờ xác nhận."
+            String.format("Đơn hàng của bạn đã được tạo thành công. Mã đơn: #%d\n" +
+                         "Đơn hàng đang ở trạng thái: Chờ xác nhận.\n%s",
+                         newOrder.getId(),
+                         java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
         );
         
         cartRepository.delete(cart);
@@ -424,7 +427,10 @@ public class OrderService {
                 order.getUser().getId(),
                 order.getId(),
                 "PENDING",
-                "Đơn hàng #" + order.getId() + " đã thanh toán thành công. Đang chờ xác nhận từ cửa hàng."
+                String.format("Đơn hàng #%d đã thanh toán thành công.\n" +
+                             "Đơn hàng đang ở trạng thái: Chờ xác nhận.\n%s",
+                             order.getId(),
+                             java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
             );
             
             // Xóa giỏ hàng của user (nếu có)

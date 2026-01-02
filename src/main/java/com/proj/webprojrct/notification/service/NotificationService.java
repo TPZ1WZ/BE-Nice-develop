@@ -42,6 +42,8 @@ public class NotificationService {
     public void createNotification(Long userId, NotificationType type, String title, 
                                    String message, Map<String, Object> data) {
         try {
+            log.info("📬 [NOTIFICATION] Creating {} notification for user {}", type, userId);
+            
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -54,10 +56,11 @@ public class NotificationService {
                     .isRead(false)
                     .build();
 
-            notificationRepository.save(notification);
-            log.info("Created notification for user {}: {} - {}", userId, type, title);
+            Notification saved = notificationRepository.save(notification);
+            log.info("✅ [NOTIFICATION] Saved notification ID: {} for user {}: {} - {}", 
+                     saved.getId(), userId, type, title);
         } catch (Exception e) {
-            log.error("Error creating notification for user {}", userId, e);
+            log.error("❌ [NOTIFICATION] Error creating notification for user {}", userId, e);
         }
     }
 
@@ -66,12 +69,16 @@ public class NotificationService {
      */
     @Async
     public void createOrderNotification(Long userId, Long orderId, String status, String message) {
+        log.info("🔔 [NOTIFICATION] Creating order notification for user {} - Order #{} - Status: {}", userId, orderId, status);
+        
         Map<String, Object> data = new HashMap<>();
         data.put("order_id", orderId);
         data.put("status", status);
         
         String title = getOrderNotificationTitle(status);
         createNotification(userId, NotificationType.ORDER, title, message, data);
+        
+        log.info("✅ [NOTIFICATION] Order notification created successfully for user {}", userId);
     }
 
     /**
@@ -170,10 +177,13 @@ public class NotificationService {
      */
     @Transactional(readOnly = true)
     public Long countUnreadNotifications(Long userId) {
+        log.info("🔍 [COUNT] Counting unread notifications for userId: {}", userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return notificationRepository.countUnreadByUser(user);
+        Long count = notificationRepository.countUnreadByUser(user);
+        log.info("🔍 [COUNT] Found {} unread notifications for user: {}", count, userId);
+        return count;
     }
 
     /**

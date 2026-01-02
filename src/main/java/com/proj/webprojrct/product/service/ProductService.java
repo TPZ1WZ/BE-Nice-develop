@@ -3,6 +3,7 @@ package com.proj.webprojrct.product.service;
 import com.proj.webprojrct.category.dto.CategoryDto;
 import com.proj.webprojrct.category.entity.Category;
 import com.proj.webprojrct.category.repo.CategoryRepo;
+import com.proj.webprojrct.chatbot.service.DataSeedService;
 import com.proj.webprojrct.product.dto.*;
 import com.proj.webprojrct.product.entity.Product;
 import com.proj.webprojrct.product.mapper.ProductMapper;
@@ -25,6 +26,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepo categoryRepo;
+    private final DataSeedService dataSeedService;
 
     public Page<Product> getFilteredProducts(List<Long> categoryIds, String text, String sort, String price, int page,
             int size) {
@@ -285,6 +287,15 @@ public class ProductService {
         Product product = productMapper.toEntity(dto);
         product.setDelete(false);
         Product saved = productRepository.save(product);
+        
+        // 🔄 Tự động đồng bộ chatbot khi tạo sản phẩm mới
+        try {
+            dataSeedService.syncSingleProduct(saved);
+        } catch (Exception e) {
+            // Log error but don't fail the product creation
+            System.err.println("Warning: Failed to sync product to chatbot: " + e.getMessage());
+        }
+        
         return productMapper.toResponseDto(saved);
     }
 
@@ -325,6 +336,15 @@ public class ProductService {
 
         // --- Lưu lại ---
         Product updated = productRepository.save(product);
+        
+        // 🔄 Tự động đồng bộ chatbot khi cập nhật sản phẩm
+        try {
+            dataSeedService.syncSingleProduct(updated);
+        } catch (Exception e) {
+            // Log error but don't fail the product update
+            System.err.println("Warning: Failed to sync product to chatbot: " + e.getMessage());
+        }
+        
         return productMapper.toResponseDto(updated);
     }
 
@@ -332,6 +352,14 @@ public class ProductService {
         productRepository.findById(id).ifPresent(product -> {
             product.setDelete(true);
             productRepository.save(product);
+            
+            // 🔄 Tự động xóa sản phẩm khỏi chatbot khi soft delete
+            try {
+                dataSeedService.removeSingleProduct(id);
+            } catch (Exception e) {
+                // Log error but don't fail the product deletion
+                System.err.println("Warning: Failed to remove product from chatbot: " + e.getMessage());
+            }
         });
     }
 
