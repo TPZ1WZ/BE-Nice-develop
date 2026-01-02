@@ -123,6 +123,7 @@ public class SecurityUtil {
 
         // Fallback to authentication name
         return authentication.getName();
+    }
 
     /**
      * Check if user has specific role
