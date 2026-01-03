@@ -44,8 +44,8 @@ public class OrderService {
         if (!order.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Bạn không có quyền hủy đơn hàng này.");
         }
-        if (!List.of("PENDING", "WAITING_FOR_PAYMENT", "PAID").contains(order.getStatus().toUpperCase())) {
-            throw new RuntimeException("Chỉ có thể hủy đơn hàng ở trạng thái chờ xử lý hoặc chờ thanh toán.");
+        if (!List.of("PENDING", "CONFIRMED", "WAITING_FOR_PAYMENT", "PAID").contains(order.getStatus().toUpperCase())) {
+            throw new RuntimeException("Chỉ có thể hủy đơn hàng ở trạng thái chờ xử lý, đã xác nhận hoặc chờ thanh toán.");
         }
         order.setStatus("CANCELED");
         orderRepository.save(order);
