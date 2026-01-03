@@ -111,7 +111,7 @@ public class OrderController {
             orderService.cancelOrder(user, orderId);
             return ResponseEntity.ok(Map.of(
                 "status", "success",
-                "message", "Order cancelled successfully"
+                "message", "Đã hủy đơn hàng thành công"
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(

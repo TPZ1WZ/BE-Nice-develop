@@ -96,6 +96,12 @@ public class Coupon extends BaseEntity {
             discount = maxDiscountAmount;
         }
 
+        // Giảm giá không được vượt quá giá trị đơn hàng (không bao gồm phí ship)
+        // Đảm bảo giá trị sau giảm giá không bị âm
+        if (discount > orderAmount) {
+            discount = orderAmount;
+        }
+
         return discount;
     }
 }
