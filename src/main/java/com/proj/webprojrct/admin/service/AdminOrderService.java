@@ -114,6 +114,10 @@ public class AdminOrderService {
                 
                 // Nếu hủy đơn → hoàn lại số lượng và coupon
                 if ("CANCELED".equalsIgnoreCase(newStatus) && !"CANCELED".equalsIgnoreCase(oldStatus)) {
+                    log.info("=== ADMIN HỦY ĐỚN #{}  ===", order.getId());
+                    log.info("Payment method: '{}'", order.getPaymentMethod());
+                    log.info("Old status: {}, New status: {}", oldStatus, newStatus);
+                    
                     order.getItems().forEach(orderItem -> {
                         productRepository.findById(orderItem.getProduct().getId()).ifPresent(product -> {
                             product.setStock(product.getStock() + orderItem.getQuantity());
@@ -128,12 +132,43 @@ public class AdminOrderService {
                             couponRepository.save(coupon);
                         });
                     }
+                    
+                    // Thêm thông báo admin note nếu là thanh toán VNPay
+                    String paymentMethod = order.getPaymentMethod();
+                    if (paymentMethod != null) {
+                        String paymentMethodUpper = paymentMethod.toUpperCase();
+                        log.info("Checking payment method: '{}' -> '{}'", paymentMethod, paymentMethodUpper);
+                        
+                        if (paymentMethodUpper.contains("VNPAY") || paymentMethodUpper.equals("VNPAY")) {
+                            String refundNote = "Đơn hàng đã được hủy. Vui lòng liên hệ Admin để được hoàn tiền.";
+                            order.setAdminNote(refundNote);
+                            log.info("✓ ĐÃ SET adminNote cho đơn VNPay #{}: {}", order.getId(), refundNote);
+                        } else {
+                            log.info("✗ KHÔNG SET adminNote. Payment method không phải VNPay: '{}'", paymentMethod);
+                        }
+                    } else {
+                        log.warn("⚠ Payment method is NULL!");
+                    }
+                    
+                    log.info("AdminNote trước khi save: '{}'", order.getAdminNote());
                 }
                 
                 // Cập nhật trạng thái
                 order.setStatus(newStatus.toUpperCase());
                 order.setUpdatedAt(LocalDateTime.now());
-                adminOrderRepository.save(order);
+                Order savedOrder = adminOrderRepository.save(order);
+                adminOrderRepository.flush(); // Force save to database
+                
+                log.info("=== SAU KHI SAVE ===");
+                log.info("Order #{} status: {}", savedOrder.getId(), savedOrder.getStatus());
+                log.info("Order #{} adminNote: '{}'", savedOrder.getId(), savedOrder.getAdminNote());
+                
+                // Verify by reloading from database
+                Order reloadedOrder = adminOrderRepository.findById(orderId).orElse(null);
+                if (reloadedOrder != null) {
+                    log.info("=== VERIFY TỪ DATABASE ===");
+                    log.info("Reloaded Order #{} adminNote: '{}'", reloadedOrder.getId(), reloadedOrder.getAdminNote());
+                }
                 
                 // Gửi thông báo cho user
                 sendOrderStatusNotification(order, newStatus);

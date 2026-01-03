@@ -244,6 +244,12 @@ public class AdminOrderRestController {
                 }
                 order.setStatus("CANCELED");
                 
+                // Thêm adminNote nếu là đơn VNPay
+                String paymentMethod = order.getPaymentMethod();
+                if (paymentMethod != null && paymentMethod.toUpperCase().contains("VNPAY")) {
+                    order.setAdminNote("Đơn hàng đã được hủy. Vui lòng liên hệ Admin để được hoàn tiền.");
+                }
+                
                 notificationService.createOrderNotification(
                     order.getUser().getId(),
                     order.getId(),

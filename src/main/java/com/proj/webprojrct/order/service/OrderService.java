@@ -48,6 +48,17 @@ public class OrderService {
             throw new RuntimeException("Chỉ có thể hủy đơn hàng ở trạng thái chờ xử lý, đã xác nhận hoặc chờ thanh toán.");
         }
         order.setStatus("CANCELED");
+        
+        // Thêm ghi chú cho đơn hàng thanh toán VNPay
+        if ("VNPay".equalsIgnoreCase(order.getPaymentMethod()) || "VNPAY".equalsIgnoreCase(order.getPaymentMethod())) {
+            String refundNote = "Đơn hàng đã được hủy. Vui lòng liên hệ Admin để được hoàn tiền.";
+            if (order.getAdminNote() != null && !order.getAdminNote().isEmpty()) {
+                order.setAdminNote(order.getAdminNote() + "\n" + refundNote);
+            } else {
+                order.setAdminNote(refundNote);
+            }
+        }
+        
         orderRepository.save(order);
         
         // Tạo thông báo hủy đơn hàng
