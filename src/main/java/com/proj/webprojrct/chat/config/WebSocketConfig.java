@@ -23,8 +23,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Register STOMP endpoint that clients will use to connect
+        // 1. SockJS fallback endpoint (for browsers)
         registry.addEndpoint("/ws-chat")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
+        
+        // 2. Native WebSocket endpoint (for mobile apps)
+        registry.addEndpoint("/ws-chat")
+                .setAllowedOriginPatterns("*");
     }
 }
