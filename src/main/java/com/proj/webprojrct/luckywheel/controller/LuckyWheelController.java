@@ -1,0 +1,69 @@
+package com.proj.webprojrct.luckywheel.controller;
+
+import com.proj.webprojrct.common.util.SecurityUtil;
+import com.proj.webprojrct.luckywheel.dto.LuckyWheelInfoResponse;
+import com.proj.webprojrct.luckywheel.dto.SpinRequest;
+import com.proj.webprojrct.luckywheel.dto.SpinResponse;
+import com.proj.webprojrct.luckywheel.service.LuckyWheelService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * LuckyWheelController - REST API cho vòng quay may mắn
+ */
+@RestController
+@RequestMapping("/api/v1/lucky-wheel")
+@RequiredArgsConstructor
+@Slf4j
+public class LuckyWheelController {
+
+    private final LuckyWheelService luckyWheelService;
+
+    /**
+     * Lấy thông tin vòng quay
+     * GET /api/v1/lucky-wheel/info
+     */
+    @GetMapping("/info")
+    public ResponseEntity<LuckyWheelInfoResponse> getWheelInfo() {
+        try {
+            Long userId = SecurityUtil.getCurrentUserId();
+            LuckyWheelInfoResponse response = luckyWheelService.getWheelInfo(userId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Failed to get wheel info", e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Thực hiện quay thưởng
+     * POST /api/v1/lucky-wheel/spin
+     */
+    @PostMapping("/spin")
+    public ResponseEntity<SpinResponse> performSpin(@RequestBody(required = false) SpinRequest request) {
+        try {
+            Long userId = SecurityUtil.getCurrentUserId();
+            Boolean useFreeSpin = (request != null && request.getUseFreeSpin() != null) 
+                    ? request.getUseFreeSpin() 
+                    : true; // Mặc định dùng lượt free nếu có
+            
+            SpinResponse response = luckyWheelService.performSpin(userId, useFreeSpin);
+            
+            if (response.getSuccess()) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (Exception e) {
+            log.error("Failed to perform spin", e);
+            return ResponseEntity.badRequest().body(
+                SpinResponse.builder()
+                    .success(false)
+                    .message("Lỗi hệ thống: " + e.getMessage())
+                    .build()
+            );
+        }
+    }
+}
