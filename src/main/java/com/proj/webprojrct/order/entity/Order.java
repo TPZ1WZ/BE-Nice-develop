@@ -27,6 +27,7 @@ public class Order extends BaseEntity {
     private Double totalDiscount;
     private Double finalAmount;
     private Double shippingFee = 30000.0; // Phí ship cố định 30,000đ
+    private Integer nikeCoinUsed; // Số Nike Coin đã sử dụng
     private Integer quantity;
     private String receiverName; // Tên người nhận hàng
     private String phone;

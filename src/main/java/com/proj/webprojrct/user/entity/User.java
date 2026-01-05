@@ -64,6 +64,12 @@ public class User extends BaseEntity implements UserDetails {
     private LocalDateTime banUntil;
     // -------------------------
 
+    // --- LOYALTY SYSTEM ---
+    @Builder.Default
+    @Column(name = "loyalty_points", nullable = false)
+    private Integer loyaltyPoints = 0; // Nike Coin tích lũy
+    // ----------------------
+
     @Column(length = 1000)
     private String refreshToken;
 

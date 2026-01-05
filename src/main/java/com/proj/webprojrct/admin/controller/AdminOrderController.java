@@ -86,6 +86,8 @@ public class AdminOrderController {
                     dto.put("status", order.getStatus());
                     dto.put("totalAmount", order.getTotalAmount());
                     dto.put("totalDiscount", order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0);
+                    dto.put("nikeCoinUsed", order.getNikeCoinUsed() != null ? order.getNikeCoinUsed() : 0);
+                    dto.put("shippingFee", order.getShippingFee() != null ? order.getShippingFee() : 0.0);
                     dto.put("finalAmount", order.getFinalAmount());
                     dto.put("quantity", order.getItems() != null ? order.getItems().stream().mapToInt(i -> i.getQuantity()).sum() : 0);
                     dto.put("createdAt", order.getCreatedAt());

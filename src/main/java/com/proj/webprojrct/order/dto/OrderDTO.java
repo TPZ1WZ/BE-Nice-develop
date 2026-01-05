@@ -16,6 +16,7 @@ public class OrderDTO {
     private Double totalDiscount;
     private Double finalAmount;
     private Double shippingFee;
+    private Integer nikeCoinUsed;
     private Integer quantity;
     private String receiverName;  // Tên người nhận hàng
     private String phone;

@@ -76,32 +76,51 @@ public class Coupon extends BaseEntity {
     }
 
     public boolean canApplyToOrder(Double orderAmount) {
-        return isValid() && orderAmount >= minOrderAmount;
+        boolean valid = isValid();
+        boolean minOrderMet = orderAmount >= minOrderAmount;
+        System.out.println("🔍 [COUPON canApplyToOrder] Code: " + code);
+        System.out.println("  - isValid: " + valid);
+        System.out.println("  - orderAmount: " + orderAmount);
+        System.out.println("  - minOrderAmount: " + minOrderAmount);
+        System.out.println("  - orderAmount >= minOrderAmount: " + minOrderMet);
+        System.out.println("  - Final result: " + (valid && minOrderMet));
+        return valid && minOrderMet;
     }
 
     public Double calculateDiscount(Double orderAmount) {
+        System.out.println("💰 [COUPON calculateDiscount] Starting for code: " + code);
+        System.out.println("  - orderAmount: " + orderAmount);
+        
         if (!canApplyToOrder(orderAmount)) {
+            System.out.println("  - canApplyToOrder returned FALSE, returning 0.0");
             return 0.0;
         }
 
+        System.out.println("  - canApplyToOrder returned TRUE, calculating discount...");
+        
         Double discount = 0.0;
         if (discountType == DiscountType.PERCENTAGE) {
             discount = orderAmount * (discountValue / 100);
+            System.out.println("  - PERCENTAGE calculation: " + orderAmount + " * " + discountValue + "% = " + discount);
         } else if (discountType == DiscountType.FIXED_AMOUNT) {
             discount = discountValue;
+            System.out.println("  - FIXED_AMOUNT: " + discount);
         }
 
         // Apply max discount limit
         if (maxDiscountAmount != null && discount > maxDiscountAmount) {
+            System.out.println("  - Applying maxDiscountAmount cap: " + discount + " -> " + maxDiscountAmount);
             discount = maxDiscountAmount;
         }
 
         // Giảm giá không được vượt quá giá trị đơn hàng (không bao gồm phí ship)
         // Đảm bảo giá trị sau giảm giá không bị âm
         if (discount > orderAmount) {
+            System.out.println("  - Discount exceeds order amount: " + discount + " -> " + orderAmount);
             discount = orderAmount;
         }
 
+        System.out.println("  - Final calculated discount: " + discount);
         return discount;
     }
 }

@@ -26,4 +26,7 @@ public class PlaceOrderRequest {
     
     @JsonProperty("customer_note")
     private String customerNote; // Ghi chú của khách hàng
+    
+    @JsonProperty("nike_coin_used")
+    private Integer nikeCoinUsed; // Số Nike Coin sử dụng
 }

@@ -15,6 +15,7 @@ import com.proj.webprojrct.promotion.repository.CouponRepository;
 import com.proj.webprojrct.review.repository.ReviewRepository;
 import com.proj.webprojrct.user.entity.User;
 import com.proj.webprojrct.notification.service.NotificationService;
+import com.proj.webprojrct.loyalty.service.LoyaltyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ public class OrderService {
     private final ReviewRepository reviewRepository;
     private final NotificationService notificationService;
     private final com.proj.webprojrct.cart.repository.CartItemRepository cartItemRepository;
+    private final LoyaltyService loyaltyService;
 
     public void cancelOrder(User user, Long orderId) {
         var order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng."));
@@ -81,7 +83,7 @@ public class OrderService {
         });
     }
 
-    public String placeOrder(User user, String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode, String customerNote) {
+    public String placeOrder(User user, String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode, String customerNote, Integer nikeCoinUsed) {
         System.out.println("🔍 [ORDER SERVICE] placeOrder called with:");
         System.out.println("  - User: " + user.getEmail());
         System.out.println("  - User ID: " + user.getId());
@@ -91,6 +93,7 @@ public class OrderService {
         System.out.println("  - Phone: " + phone);
         System.out.println("  - Coupon Code: " + couponCode);
         System.out.println("  - Customer Note: " + customerNote);
+        System.out.println("  - Nike Coin Used: " + nikeCoinUsed);
         
         // 🔒 Hủy các order cũ đang WAITING_FOR_PAYMENT (tránh duplicate order)
         if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
@@ -160,6 +163,7 @@ public class OrderService {
         order.setShippingAddress(shippingAddress);
         order.setShippingFee(30000.0); // Phí ship cố định 30,000đ
         order.setCustomerNote(customerNote);
+        order.setNikeCoinUsed(nikeCoinUsed != null ? nikeCoinUsed : 0);
         
         System.out.println("📝 [ORDER SERVICE] Setting order fields:");
         System.out.println("  - ReceiverName set to: " + order.getReceiverName());
@@ -172,14 +176,44 @@ public class OrderService {
         double bonusDiscount = 0.0;
         if (couponItem != null) {
             order.setCoupon(couponItem);
+            System.out.println("🎫 [COUPON DEBUG] Before calculateDiscount:");
+            System.out.println("  - Coupon code: " + couponItem.getCode());
+            System.out.println("  - Discount type: " + couponItem.getDiscountType());
+            System.out.println("  - Discount value: " + couponItem.getDiscountValue());
+            System.out.println("  - Used count: " + couponItem.getUsedCount());
+            System.out.println("  - Usage limit: " + couponItem.getUsageLimit());
+            System.out.println("  - Order amount: " + totalBeforeDiscount);
+            System.out.println("  - isValid(): " + couponItem.isValid());
+            System.out.println("  - canApplyToOrder(): " + couponItem.canApplyToOrder(totalBeforeDiscount));
+            
             bonusDiscount = couponItem.calculateDiscount(totalBeforeDiscount);
+            
+            System.out.println("  - Calculated discount: " + bonusDiscount);
+            
             totalAfterDiscount = totalBeforeDiscount - bonusDiscount;
             couponItem.setUsedCount(couponItem.getUsedCount() + 1);
             couponRepository.save(couponItem);
         }
+        
+        // Xử lý Nike Coin
+        double nikeCoinDiscount = 0.0;
+        if (nikeCoinUsed != null && nikeCoinUsed > 0) {
+            // Validate user có đủ Nike Coin
+            Integer userBalance = user.getLoyaltyPoints();
+            if (userBalance == null || userBalance < nikeCoinUsed) {
+                throw new RuntimeException("Số dư Nike Coin không đủ. Bạn chỉ có " + (userBalance != null ? userBalance : 0) + " Nike Coin.");
+            }
+            
+            // Trừ Nike Coin từ user (1 Coin = 1 đồng) - will be saved after order is created
+            nikeCoinDiscount = nikeCoinUsed;
+            totalAfterDiscount -= nikeCoinDiscount;
+            
+            System.out.println("💰 [NIKE COIN] Will deduct " + nikeCoinUsed + " Nike Coins from user " + user.getEmail());
+        }
+        
         order.setTotalAmount(totalBeforeDiscount);
-        order.setTotalDiscount(bonusDiscount);
-        // Tổng cộng = (Tổng sản phẩm - Giảm giá) + Phí vận chuyển
+        order.setTotalDiscount(bonusDiscount); // Chỉ lưu coupon discount, Nike Coin có field riêng
+        // Tổng cộng = (Tổng sản phẩm - Giảm giá - Nike Coin) + Phí vận chuyển
         order.setFinalAmount(totalAfterDiscount + order.getShippingFee());
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -227,6 +261,18 @@ public class OrderService {
         System.out.println("  - After save - Phone: " + newOrder.getPhone());
         System.out.println("  - After save - FinalAmount: " + newOrder.getFinalAmount());
         System.out.println("  - After save - Quantity: " + newOrder.getQuantity());
+        
+        // Trừ Nike Coin sau khi order thành công
+        if (nikeCoinUsed != null && nikeCoinUsed > 0) {
+            loyaltyService.deductPoints(
+                user.getId(), 
+                nikeCoinUsed, 
+                "REDEEM", 
+                "Sử dụng Nike Coin cho đơn hàng #" + newOrder.getId(),
+                newOrder.getId()
+            );
+            System.out.println("💰 [NIKE COIN] Successfully deducted " + nikeCoinUsed + " coins for order #" + newOrder.getId());
+        }
         
         // Tạo thông báo đơn hàng mới
         notificationService.createOrderNotification(
@@ -351,9 +397,11 @@ public class OrderService {
         Double finalAmount = order.getFinalAmount();
         Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
         Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+        Integer nikeCoinUsed = order.getNikeCoinUsed() != null ? order.getNikeCoinUsed() : 0;
         
-        // Kiểm tra nếu finalAmount chưa bao gồm shipping fee
-        Double expectedFinalAmount = totalAmount - totalDiscount + shippingFee;
+        // Kiểm tra nếu finalAmount chưa bao gồm shipping fee hoặc Nike Coin
+        // Công thức: Tổng cộng = (Tạm tính - Giảm giá coupon - Nike Coin) + Phí ship
+        Double expectedFinalAmount = totalAmount - totalDiscount - nikeCoinUsed + shippingFee;
         if (Math.abs(finalAmount - expectedFinalAmount) > 0.01) {
             // Nếu sai lệch thì tính lại
             finalAmount = expectedFinalAmount;
@@ -365,6 +413,7 @@ public class OrderService {
                 .totalDiscount(totalDiscount)
                 .finalAmount(finalAmount)
                 .shippingFee(shippingFee)
+                .nikeCoinUsed(order.getNikeCoinUsed())
                 .quantity(order.getQuantity())
                 .receiverName(order.getReceiverName())
                 .phone(order.getPhone())

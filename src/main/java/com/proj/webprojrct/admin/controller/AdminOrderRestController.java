@@ -58,6 +58,7 @@ public class AdminOrderRestController {
             // Calculate totalAmount if null (for old data)
             double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
             double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+            Integer nikeCoinUsed = order.getNikeCoinUsed() != null ? order.getNikeCoinUsed() : 0;
             double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;
             
             // If totalAmount is 0, calculate from items
@@ -67,14 +68,15 @@ public class AdminOrderRestController {
                     .sum();
             }
             
-            // Tính lại finalAmount nếu cần
-            Double expectedFinalAmount = totalAmount - totalDiscount + shippingFee;
+            // Tính lại finalAmount nếu cần (bao gồm Nike Coin)
+            Double expectedFinalAmount = totalAmount - totalDiscount - nikeCoinUsed + shippingFee;
             if (Math.abs(finalAmount - expectedFinalAmount) > 0.01) {
                 finalAmount = expectedFinalAmount;
             }
             
             dto.put("totalAmount", totalAmount);
             dto.put("totalDiscount", totalDiscount);
+            dto.put("nikeCoinUsed", nikeCoinUsed);
             dto.put("shippingFee", shippingFee);
             dto.put("finalAmount", finalAmount);
             dto.put("quantity", order.getItems() != null ? order.getItems().stream().mapToInt(i -> i.getQuantity()).sum() : 0);
@@ -136,16 +138,18 @@ public class AdminOrderRestController {
                     
                     Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
                     Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+                    Integer nikeCoinUsed = order.getNikeCoinUsed() != null ? order.getNikeCoinUsed() : 0;
                     Double finalAmount = order.getFinalAmount() != null ? order.getFinalAmount() : 0.0;
                     
-                    // Tính lại finalAmount nếu cần (đơn hàng cũ có thể chưa cộng shipping fee)
-                    Double expectedFinalAmount = totalAmount - totalDiscount + shippingFee;
+                    // Tính lại finalAmount nếu cần (đơn hàng cũ có thể chưa cộng shipping fee và Nike Coin)
+                    Double expectedFinalAmount = totalAmount - totalDiscount - nikeCoinUsed + shippingFee;
                     if (Math.abs(finalAmount - expectedFinalAmount) > 0.01) {
                         finalAmount = expectedFinalAmount;
                     }
                     
                     dto.put("totalAmount", totalAmount);
                     dto.put("totalDiscount", totalDiscount);
+                    dto.put("nikeCoinUsed", nikeCoinUsed);
                     dto.put("shippingFee", shippingFee);
                     dto.put("finalAmount", finalAmount);
                     dto.put("quantity", order.getItems() != null ? order.getItems().stream().mapToInt(i -> i.getQuantity()).sum() : 0);

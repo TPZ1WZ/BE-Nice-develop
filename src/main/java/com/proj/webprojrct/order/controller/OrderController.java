@@ -39,6 +39,7 @@ public class OrderController {
             System.out.println("  - Phone: " + request.getPhone());
             System.out.println("  - Coupon Code: " + request.getCouponCode());
             System.out.println("  - Customer Note: " + request.getCustomerNote());
+            System.out.println("  - Nike Coin Used: " + request.getNikeCoinUsed());
             
             String result = orderService.placeOrder(
                 user, 
@@ -47,7 +48,8 @@ public class OrderController {
                 request.getPaymentMethod(), 
                 request.getPhone(), 
                 request.getCouponCode(),
-                request.getCustomerNote()
+                request.getCustomerNote(),
+                request.getNikeCoinUsed()
             );
             
             if (result != null && result.startsWith("http")) {
