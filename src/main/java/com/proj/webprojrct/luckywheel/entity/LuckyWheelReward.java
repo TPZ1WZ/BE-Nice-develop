@@ -35,7 +35,11 @@ public class LuckyWheelReward {
     private Long couponId;
 
     @Column(name = "probability", nullable = false, precision = 5, scale = 2)
-    private BigDecimal probability; // Xác suất (%)
+    private BigDecimal probability; // Xác suất (%) - tự động tính từ weight
+
+    @Column(name = "weight", nullable = false)
+    @Builder.Default
+    private Integer weight = 10; // Trọng số để tính xác suất
 
     @Column(name = "icon_name", length = 100)
     private String iconName;

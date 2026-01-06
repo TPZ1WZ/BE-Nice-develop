@@ -30,7 +30,7 @@ public class SpinHistory {
     @JoinColumn(name = "reward_id")
     private LuckyWheelReward reward;
 
-    @Column(name = "reward_type", nullable = false, length = 50)
+    @Column(name = "reward_type", length = 50)
     private String rewardType; // COIN, COUPON, NOTHING
 
     @Column(name = "coin_amount")
@@ -42,12 +42,34 @@ public class SpinHistory {
     @Column(name = "spin_date")
     private LocalDateTime spinDate;
 
+    @Column(name = "spin_time", nullable = false)
+    private LocalDateTime spinTime;
+
     @Column(name = "cost")
     @Builder.Default
     private Integer cost = 0; // 0 = free, 500 = paid
 
+    @Column(name = "is_claimed", nullable = false)
+    @Builder.Default
+    private Boolean isClaimed = false; // Đã nhận thưởng chưa
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
     @PrePersist
     protected void onCreate() {
-        spinDate = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
+        spinDate = now;
+        spinTime = now;
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * LuckyWheelController - REST API cho vòng quay may mắn
  */
@@ -45,11 +48,7 @@ public class LuckyWheelController {
     public ResponseEntity<SpinResponse> performSpin(@RequestBody(required = false) SpinRequest request) {
         try {
             Long userId = SecurityUtil.getCurrentUserId();
-            Boolean useFreeSpin = (request != null && request.getUseFreeSpin() != null) 
-                    ? request.getUseFreeSpin() 
-                    : true; // Mặc định dùng lượt free nếu có
-            
-            SpinResponse response = luckyWheelService.performSpin(userId, useFreeSpin);
+            SpinResponse response = luckyWheelService.performSpin(userId, true);
             
             if (response.getSuccess()) {
                 return ResponseEntity.ok(response);
@@ -64,6 +63,36 @@ public class LuckyWheelController {
                     .message("Lỗi hệ thống: " + e.getMessage())
                     .build()
             );
+        }
+    }
+    
+    /**
+     * Ghi nhận lượt xem sản phẩm (để kiếm lượt quay)
+     * POST /api/v1/lucky-wheel/track-product/{productId}
+     */
+    @PostMapping("/track-product/{productId}")
+    public ResponseEntity<Map<String, Object>> trackProductView(@PathVariable Long productId) {
+        try {
+            Long userId = SecurityUtil.getCurrentUserId();
+            luckyWheelService.recordProductView(userId, productId);
+            
+            // Lấy thông tin cập nhật sau khi track
+            LuckyWheelInfoResponse info = luckyWheelService.getWheelInfo(userId);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Đã ghi nhận lượt xem sản phẩm");
+            response.put("productsViewedToday", info.getProductsViewedToday());
+            response.put("requiredProductViews", info.getRequiredProductViews());
+            response.put("canSpin", info.getHasFreeSpinToday());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Failed to track product view", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 }
