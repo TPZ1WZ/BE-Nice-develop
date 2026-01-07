@@ -41,8 +41,21 @@ public class AdminOrderRestController {
         return orders.stream().map(order -> {
             Map<String, Object> dto = new LinkedHashMap<>();
             dto.put("id", order.getId());
-            dto.put("userName", order.getUser() != null ? order.getUser().getFullName() : "Khách lẻ");
-            dto.put("email", order.getUser() != null ? order.getUser().getEmail() : "");
+            
+            // Safe access to user - handle case where user_id exists but user was deleted
+            String userName = "Khách lẻ";
+            String email = "";
+            try {
+                if (order.getUser() != null) {
+                    userName = order.getUser().getFullName() != null ? order.getUser().getFullName() : "Khách lẻ";
+                    email = order.getUser().getEmail() != null ? order.getUser().getEmail() : "";
+                }
+            } catch (Exception e) {
+                // User was deleted but order still references user_id
+                userName = "User đã xóa (ID: " + order.getId() + ")";
+            }
+            dto.put("userName", userName);
+            dto.put("email", email);
             dto.put("receiverName", order.getReceiverName());  // Tên người nhận hàng
             dto.put("phone", order.getPhone() != null ? order.getPhone() : "");
             dto.put("shippingAddress", order.getShippingAddress() != null ? order.getShippingAddress() : "");
