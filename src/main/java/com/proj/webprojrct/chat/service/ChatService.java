@@ -121,6 +121,10 @@ public class ChatService {
                 "/queue/messages",
                 dto
         );
+        
+        // IMPORTANT: Send to admin as well so they can see their own message
+        messagingTemplate.convertAndSend("/topic/admin/messages", dto);
+        log.info("📤 Sent to admin topic: /topic/admin/messages (so admin sees their own message)");
 
         log.info("Message sent from admin {} to user {}: {}", adminId, userId, content);
         return dto;
