@@ -354,6 +354,10 @@ public class UserService {
             user.setAddress(request.getAddress());
         }
 
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+
         User updatedUser = this.userRepository.save(user);
         return userMapper.toResponse(updatedUser);
     }

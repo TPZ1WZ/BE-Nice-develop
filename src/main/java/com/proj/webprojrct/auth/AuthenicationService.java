@@ -197,9 +197,18 @@ public class AuthenicationService {
             throws EntityExistsException {
         try {
             // Check if email already exists
+            // Check if email already exists
             Optional<User> existingUser = userRepository.findByEmail(registerDTO.getEmail());
             if (existingUser.isPresent()) {
                 throw new EntityExistsException("Email already exists");
+            }
+
+            // Check if phone already exists
+            if (registerDTO.getPhone() != null && !registerDTO.getPhone().isEmpty()) {
+                Optional<User> existingPhone = userRepository.findByPhone(registerDTO.getPhone());
+                if (existingPhone.isPresent()) {
+                    throw new EntityExistsException("Phone number already exists");
+                }
             }
 
             // Map RegisterDTO to User entity (chỉ map những field User có)

@@ -173,6 +173,20 @@ public class AuthenticationController {
                                 .build());
             }
 
+            // Check if phone number already exists
+            if (registerDTO.getPhone() != null && !registerDTO.getPhone().isEmpty()) {
+                Optional<User> existingPhone = userRepository.findByPhone(registerDTO.getPhone());
+                if (existingPhone.isPresent()) {
+                    log.warn("⚠️ [REGISTER-OTP] Phone already registered: '{}'", registerDTO.getPhone());
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(RegisterResponse.builder()
+                                    .success(false)
+                                    .message("Phone number already exists")
+                                    .email(normalizedEmail)
+                                    .build());
+                }
+            }
+
             // Check if there's already a pending registration
             Optional<PendingRegistration> existingPending = pendingRegistrationService
                     .findByEmail(normalizedEmail);
