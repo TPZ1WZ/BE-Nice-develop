@@ -34,6 +34,7 @@ public class CartResponse {
                     item.getProduct().getSubTitle(),
                     item.getProduct().getDescription(),
                     item.getProduct().getPrice(),
+                    item.getProduct().getStock(),
                     item.getProduct().getImages()
             );
             CartItemResponse cartItemResponse = new CartItemResponse(
@@ -78,6 +79,7 @@ public class CartResponse {
         private String subTitle;
         private String description;
         private Double price;
+        private Integer stock;
         private List<String> images;
     }
 }

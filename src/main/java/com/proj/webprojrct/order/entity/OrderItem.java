@@ -31,6 +31,8 @@ public class OrderItem extends BaseEntity {
 
     // Snapshot thông tin sản phẩm tại thời điểm mua
     private String productName;
+    
+    @Column(columnDefinition = "TEXT")
     private String productImage;
     
     private Integer quantity;
