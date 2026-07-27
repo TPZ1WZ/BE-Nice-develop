@@ -34,6 +34,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/dist/**")
                 .addResourceLocations("classpath:/static/dist/");
 
+        // Serve uploaded files (avatars, etc.) from the uploads directory
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:uploads/");
+
         // Tuỳ chọn: fallback cho mọi thứ còn lại trong /static/
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/");

@@ -14,4 +14,5 @@ public class ReviewFilterRequest {
     private int page = 0;
     private int pageSize = 10;
     private Boolean approved;
+    private String reviewStatus; // SAFE, WARNING, BLOCK
 }

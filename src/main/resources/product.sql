@@ -11,10 +11,10 @@ ON CONFLICT (id) DO NOTHING;
 -- Insert Nike products
 INSERT INTO public.product (id, created_at, updated_at, description, images, is_delete, name, price, slug, stock, sub_title, category_id) VALUES 
 -- Nike Air Max shoes
-(1, now(), now(), 'Giày Nike Air Max 90 với thiết kế cổ điển và đệm khí Max Air mang lại sự thoải mái tối đa cho mọi bước chân.', '["https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/fd17b420-b388-4c8a-aaaa-e0a98ddf175f/air-max-90-shoes-6n3vKB.png"]', false, 'Nike Air Max 90', 3200000, 'nike-air-max-90', 25, 'Giày thể thao nam nữ', 1),
+(1, now(), now(), 'Giày Nike Air Max 90 với thiết kế cổ điển và đệm khí Max Air mang lại sự thoải mái tối đa cho mọi bước chân.', '{"https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/fd17b420-b388-4c8a-aaaa-e0a98ddf175f/air-max-90-shoes-6n3vKB.png"}', false, 'Nike Air Max 90', 3200000, 'nike-air-max-90', 25, 'Giày thể thao nam nữ', 1),
 
 -- Nike Air Force 1
-(2, now(), now(), 'Nike Air Force 1 - biểu tượng bất hủ của thời trang đường phố với thiết kế cổ điển và chất lượng vượt trội.', '["https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/4f37fca8-6bce-43e7-ad07-f57ae3c13142/air-force-1-07-shoes-WrLlWX.png"]', false, 'Nike Air Force 1 ''07', 2800000, 'nike-air-force-1-07', 30, 'Giày thể thao nam nữ', 1),
+(2, now(), now(), 'Nike Air Force 1 - biểu tượng bất hủ của thời trang đường phố với thiết kế cổ điển và chất lượng vượt trội.', '{"https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/4f37fca8-6bce-43e7-ad07-f57ae3c13142/air-force-1-07-shoes-WrLlWX.png"}', false, 'Nike Air Force 1 ''07', 2800000, 'nike-air-force-1-07', 30, 'Giày thể thao nam nữ', 1),
 
 -- Nike React running shoes
 (3, now(), now(), 'Nike React Infinity Run với công nghệ đệm React mang lại cảm giác nhẹ nhàng và năng lượng cho mỗi bước chạy.', '["https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/8439f823-86cf-4086-81d2-4f9ff9a66866/react-infinity-run-flyknit-3-road-running-shoes-XJFKqC.png"]', false, 'Nike React Infinity Run 3', 4200000, 'nike-react-infinity-run-3', 20, 'Giày chạy bộ nam nữ', 2),

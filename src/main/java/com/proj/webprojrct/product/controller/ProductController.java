@@ -38,6 +38,7 @@ public class ProductController {
             @RequestParam(required = false) Integer minStock,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) List<String> sizes,
             @RequestParam(required = false, defaultValue = "name") String sortBy,
             @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
             @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -47,6 +48,7 @@ public class ProductController {
         filter.setName(name);
         filter.setMinPrice(minPrice);
         filter.setMaxPrice(maxPrice);
+        filter.setSizes(sizes);
         filter.setCategoryIds(categoryIds);
         filter.setSortBy(sortBy);
         filter.setSortDirection(sortDirection);
@@ -72,6 +74,11 @@ public class ProductController {
         filter.setName(name);
         filter.setMinPrice(minPrice);
         filter.setMaxPrice(maxPrice);
+        
+        // Thêm categoryId vào filter
+        if (categoryId != null) {
+            filter.setCategoryIds(java.util.Arrays.asList(categoryId));
+        }
 
         List<ProductListDto> result = productService.getProductsWithFiltersNoPage(filter);
         return ResponseEntity.ok(result);

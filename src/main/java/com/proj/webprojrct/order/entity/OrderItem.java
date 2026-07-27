@@ -29,9 +29,15 @@ public class OrderItem extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    // Snapshot thông tin sản phẩm tại thời điểm mua
+    private String productName;
+    
+    @Column(columnDefinition = "TEXT")
+    private String productImage;
+    
     private Integer quantity;
-    private Double productPrice;
-    private Double totalPrice;
+    private Double productPrice; // Đơn giá tại thời điểm mua
+    private Double totalPrice;   // Thành tiền = productPrice * quantity
     private String size;
 }
 

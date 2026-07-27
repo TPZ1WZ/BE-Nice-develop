@@ -20,5 +20,5 @@ public class ProductUpdateDto {
     private List<String> images;
     private Long categoryId;
     private String color;
-    private String size;
+    private List<String> sizes;
 }

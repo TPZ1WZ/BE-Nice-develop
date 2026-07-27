@@ -3,6 +3,7 @@ package com.proj.webprojrct.product.service;
 import com.proj.webprojrct.category.dto.CategoryDto;
 import com.proj.webprojrct.category.entity.Category;
 import com.proj.webprojrct.category.repo.CategoryRepo;
+import com.proj.webprojrct.chatbot.service.DataSeedService;
 import com.proj.webprojrct.product.dto.*;
 import com.proj.webprojrct.product.entity.Product;
 import com.proj.webprojrct.product.mapper.ProductMapper;
@@ -25,9 +26,12 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepo categoryRepo;
+    private final DataSeedService dataSeedService;
 
-    public Page<Product> getFilteredProducts(List<Long> categoryIds, String text, String sort, String price, int page, int size) {
-        if (sort == null) sort = "default";
+    public Page<Product> getFilteredProducts(List<Long> categoryIds, String text, String sort, String price, int page,
+            int size) {
+        if (sort == null)
+            sort = "default";
         Sort sortOption = switch (sort) {
             case "price_asc" -> Sort.by("price").ascending();
             case "price_desc" -> Sort.by("price").descending();
@@ -52,19 +56,24 @@ public class ProductService {
         }
 
         if (!categoryIds.isEmpty() && StringUtils.hasText(text) && min != null && max != null) {
-            return productRepository.findByCategoryIdInAndNameContainingIgnoreCaseAndPriceBetweenAndIsDeleteFalse(categoryIds, text, min, max, pageable);
+            return productRepository.findByCategoryIdInAndNameContainingIgnoreCaseAndPriceBetweenAndIsDeleteFalse(
+                    categoryIds, text, min, max, pageable);
         } else if (!categoryIds.isEmpty() && min != null && max != null) {
             return productRepository.findByCategoryIdInAndPriceBetweenAndIsDeleteFalse(categoryIds, min, max, pageable);
         } else if (StringUtils.hasText(text) && min != null && max != null) {
-            return productRepository.findByNameContainingIgnoreCaseAndPriceBetweenAndIsDeleteFalseAndCategory_IsDeleteFalse(text, min, max, pageable);
+            return productRepository
+                    .findByNameContainingIgnoreCaseAndPriceBetweenAndIsDeleteFalseAndCategory_IsDeleteFalse(text, min,
+                            max, pageable);
         } else if (min != null && max != null) {
             return productRepository.findByPriceBetweenAndIsDeleteFalseAndCategory_IsDeleteFalse(min, max, pageable);
         } else if (!categoryIds.isEmpty() && StringUtils.hasText(text)) {
-            return productRepository.findByCategoryIdInAndNameContainingIgnoreCaseAndIsDeleteFalse(categoryIds, text, pageable);
+            return productRepository.findByCategoryIdInAndNameContainingIgnoreCaseAndIsDeleteFalse(categoryIds, text,
+                    pageable);
         } else if (!categoryIds.isEmpty()) {
             return productRepository.findByCategoryIdInAndIsDeleteFalse(categoryIds, pageable);
         } else if (StringUtils.hasText(text)) {
-            return productRepository.findByNameContainingIgnoreCaseAndIsDeleteFalseAndCategory_IsDeleteFalse(text, pageable);
+            return productRepository.findByNameContainingIgnoreCaseAndIsDeleteFalseAndCategory_IsDeleteFalse(text,
+                    pageable);
         } else {
             return productRepository.findByIsDeleteFalseAndCategory_IsDeleteFalse(pageable);
         }
@@ -112,22 +121,42 @@ public class ProductService {
             Page<Product> productPage = Page.empty(pageable);
 
             // Kiểm tra xem có filter nào không
+            boolean hasAdvancedFilters = (filter.getSizes() != null && !filter.getSizes().isEmpty());
+            
             boolean hasFilters = (filter.getName() != null && !filter.getName().trim().isEmpty()) ||
                     filter.getMinPrice() != null ||
                     filter.getMaxPrice() != null ||
-                    (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty());
+                    (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty()) ||
+                    hasAdvancedFilters;
 
             if (!hasFilters) {
-                // Nếu không có filter nào, sử dụng method đơn giản như featured products
+                // Nếu không có filter nào, lấy tất cả sản phẩm
                 productPage = productRepository.findByIsDelete(false, pageable);
+            } else if (hasAdvancedFilters) {
+                // Dùng advanced filter nếu có sizes
+                productPage = productRepository.findWithAdvancedFilters(
+                        filter.getName(),
+                        filter.getMinPrice(),
+                        filter.getMaxPrice(),
+                        filter.getCategoryIds(),
+                        filter.getSizes(),
+                        pageable);
             } else if (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty()) {
+                // Filter theo categories
                 productPage = productRepository.findWithFiltersAndCategories(
                         filter.getName(),
                         filter.getMinPrice(),
                         filter.getMaxPrice(),
                         filter.getCategoryIds(),
-                        pageable
-                );
+                        pageable);
+            } else {
+                // Filter đơn giản
+                productPage = productRepository.findWithFilters(
+                        filter.getName(),
+                        filter.getMinPrice(),
+                        filter.getMaxPrice(),
+                        null,
+                        pageable);
             }
 
             // Convert sang DTO
@@ -145,8 +174,7 @@ public class ProductService {
                     productPage.isFirst(),
                     productPage.isLast(),
                     productPage.hasNext(),
-                    productPage.hasPrevious()
-            );
+                    productPage.hasPrevious());
         } catch (Exception e) {
             System.err.println("Error in getProductsWithFilters: " + e.getMessage());
             e.printStackTrace();
@@ -160,8 +188,7 @@ public class ProductService {
                     true,
                     true,
                     false,
-                    false
-            );
+                    false);
         }
     }
 
@@ -169,12 +196,25 @@ public class ProductService {
      * Lấy sản phẩm theo bộ lọc không phân trang
      */
     public List<ProductListDto> getProductsWithFiltersNoPage(ProductFilterDto filter) {
-        List<Product> products = productRepository.findWithFilters(
-                filter.getName(),
-                filter.getMinPrice(),
-                filter.getMaxPrice(),
-                0L
-        );
+        List<Product> products;
+
+        // Nếu có categoryIds, filter theo category
+        if (filter.getCategoryIds() != null && !filter.getCategoryIds().isEmpty()) {
+            // Dùng query với categoryIds
+            Long categoryId = filter.getCategoryIds().get(0);
+            products = productRepository.findWithFilters(
+                    filter.getName(),
+                    filter.getMinPrice(),
+                    filter.getMaxPrice(),
+                    categoryId);
+        } else {
+            // Không có category filter, lấy tất cả
+            products = productRepository.findWithFilters(
+                    filter.getName(),
+                    filter.getMinPrice(),
+                    filter.getMaxPrice(),
+                    null);
+        }
 
         return products.stream()
                 .map(this::convertToListDto)
@@ -218,7 +258,8 @@ public class ProductService {
             if (product.getImages() != null && !product.getImages().isEmpty()) {
                 // Luôn lấy ảnh đầu tiên
                 thumbnail = product.getImages().get(0);
-                System.out.println("Product " + product.getId() + " - " + product.getName() + " thumbnail: " + (thumbnail != null ? thumbnail.substring(0, Math.min(100, thumbnail.length())) : "null"));
+                System.out.println("Product " + product.getId() + " - " + product.getName() + " thumbnail: "
+                        + (thumbnail != null ? thumbnail.substring(0, Math.min(100, thumbnail.length())) : "null"));
             } else {
                 System.out.println("Product " + product.getId() + " - " + product.getName() + " has NO images");
             }
@@ -232,8 +273,9 @@ public class ProductService {
                 product.getId(),
                 product.getName(),
                 product.getPrice(),
-                thumbnail
-        );
+                thumbnail,
+                product.getSizes(),
+                product.getStock());
     }
 
     public Product getProductById(Long id) {
@@ -245,6 +287,15 @@ public class ProductService {
         Product product = productMapper.toEntity(dto);
         product.setDelete(false);
         Product saved = productRepository.save(product);
+        
+        // 🔄 Tự động đồng bộ chatbot khi tạo sản phẩm mới
+        try {
+            dataSeedService.syncSingleProduct(saved);
+        } catch (Exception e) {
+            // Log error but don't fail the product creation
+            System.err.println("Warning: Failed to sync product to chatbot: " + e.getMessage());
+        }
+        
         return productMapper.toResponseDto(saved);
     }
 
@@ -285,14 +336,30 @@ public class ProductService {
 
         // --- Lưu lại ---
         Product updated = productRepository.save(product);
+        
+        // 🔄 Tự động đồng bộ chatbot khi cập nhật sản phẩm
+        try {
+            dataSeedService.syncSingleProduct(updated);
+        } catch (Exception e) {
+            // Log error but don't fail the product update
+            System.err.println("Warning: Failed to sync product to chatbot: " + e.getMessage());
+        }
+        
         return productMapper.toResponseDto(updated);
     }
-
 
     public void deleteProduct(Long id) {
         productRepository.findById(id).ifPresent(product -> {
             product.setDelete(true);
             productRepository.save(product);
+            
+            // 🔄 Tự động xóa sản phẩm khỏi chatbot khi soft delete
+            try {
+                dataSeedService.removeSingleProduct(id);
+            } catch (Exception e) {
+                // Log error but don't fail the product deletion
+                System.err.println("Warning: Failed to remove product from chatbot: " + e.getMessage());
+            }
         });
     }
 
@@ -314,20 +381,20 @@ public class ProductService {
      */
     public List<String> getAllBrands() {
         // Trả về default brands vì entity Product không có brand field
-        return List.of("Nike", "Adidas", "Puma", "New Balance", "Converse", "Vans", "Reebok", "Jordan", "Under Armour", "ASICS");
+        return List.of("Nike", "Adidas", "Puma", "New Balance", "Converse", "Vans", "Reebok", "Jordan", "Under Armour",
+                "ASICS");
     }
 
     /**
      * Lấy tất cả categories
      */
     public List<CategoryDto> getAllCategories() {
-        return categoryRepo.findAll()
+        return categoryRepo.findByIsDelete(false)
                 .stream()
                 .map(category -> new CategoryDto(
                         category.getId(),
                         category.getName(),
-                        category.getDescription()
-                ))
+                        category.getDescription()))
                 .collect(Collectors.toList());
     }
 

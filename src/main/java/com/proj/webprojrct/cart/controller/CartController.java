@@ -53,9 +53,20 @@ public class CartController {
     }
 
     // ❌ 3️⃣ Xóa sản phẩm khỏi giỏ
-    @DeleteMapping("/remove/{productId}/{size}")
-    public Object removeItem(@AuthenticationPrincipal User user, @PathVariable Long productId, @PathVariable String size) {
-        cartService.removeItem(user, productId, size);
-        return Map.of("status", "✅ Xóa sản phẩm khỏi giỏ thành công");
+    // ❌ 3️⃣ Xóa sản phẩm khỏi giỏ
+    @DeleteMapping("/remove")
+    public Object removeItem(@AuthenticationPrincipal User user, @RequestParam Long productId,
+            @RequestParam String size) {
+        return cartService.removeItemAndGetCart(user, productId, size);
+    }
+
+    // 🔄 4️⃣ Mua lại - Thêm tất cả sản phẩm từ đơn hàng vào giỏ
+    @PostMapping("/reorder/{orderId}")
+    public Object reorderFromOrder(@AuthenticationPrincipal User user, @PathVariable Long orderId) {
+        if (user == null) {
+            return Map.of("status", false, "message", "Chưa đăng nhập.");
+        }
+        var result = cartService.reorderFromOrder(user, orderId);
+        return result;
     }
 }

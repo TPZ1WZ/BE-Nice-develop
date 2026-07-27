@@ -147,3 +147,4 @@ try {
 }
 
 Write-Output "MVN_CMD=$MAVEN_HOME/bin/$MVN_CMD"
+docker exec cps_postgres psql -U cps_user -d cps_db -c "SET client_encoding = 'LATIN1';" -f /tmp/backup.sql

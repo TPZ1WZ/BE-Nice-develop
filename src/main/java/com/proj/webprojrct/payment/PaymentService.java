@@ -20,7 +20,12 @@ public class PaymentService {
     private final OrderRepository orderRepository;
 
     public VnpayDTO createPayment(VnPayBody body) {
+        System.out.println("💳 [VNPAY] Creating payment with amount: " + body.amount + " (" + body.amountVnpPay() + " VNĐ x100)");
+        System.out.println("💳 [VNPAY] Order info: " + body.orderInfo);
+        
         var vnpTxnRef = String.valueOf(System.currentTimeMillis());
+        System.out.println("💳 [VNPAY] Transaction Reference: " + vnpTxnRef);
+        
         var vnpParams = buildParamVnPay(body, vnpTxnRef, VnpayUtils.VN_PAY_RETURN_URL);
 
         var cld = Calendar.getInstance(TimeZone.getTimeZone(VnpayUtils.TIME_ZONE_DEFAULT));
@@ -59,6 +64,10 @@ public class PaymentService {
                 VnpayUtils.VNP_SECURE_HASH_TYPE_KEY,
                 secureHash
         );
+        
+        System.out.println("✅ [VNPAY] Payment URL generated successfully");
+        System.out.println("🔗 [VNPAY] URL: " + paymentUrl);
+        
         return new VnpayDTO(0L, paymentUrl, vnpTxnRef);
     }
 

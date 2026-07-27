@@ -16,8 +16,14 @@ public interface AdminProductRepository extends JpaRepository<Product, Long> {
 
     // Tìm tất cả sản phẩm với phân trang
     Page<Product> findAll(Pageable pageable);
+    
+    // Tìm tất cả sản phẩm CHƯƠ XÓA (isDelete = false)
+    List<Product> findByIsDeleteFalse();
+    
+    // Tìm kiếm sản phẩm theo tên CHƯƠ XÓA
+    Page<Product> findByNameContainingIgnoreCaseAndIsDeleteFalse(String name, Pageable pageable);
 
-    // Tìm kiếm sản phẩm theo tên
+    // Tìm kiếm sản phẩm theo tên (có thể lấy cả đã xóa)
     Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     // Tìm kiếm sản phẩm theo mô tả
@@ -112,7 +118,7 @@ public interface AdminProductRepository extends JpaRepository<Product, Long> {
            "FROM Product p " +
            "JOIN OrderItem oi ON oi.product.id = p.id " +
            "JOIN Order o ON oi.order.id = o.id " +
-           "WHERE o.status IN ('completed', 'shipping') " +
+           "WHERE LOWER(o.status) IN ('completed', 'shipping') " +
            "GROUP BY p.id, p.name " +
            "ORDER BY SUM(oi.quantity) DESC")
     List<Object[]> findTopSellingProductsRaw(Pageable pageable);

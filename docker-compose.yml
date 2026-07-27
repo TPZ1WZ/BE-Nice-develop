@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     container_name: cps_postgres
     restart: unless-stopped
     environment:
@@ -14,7 +14,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./db/vector_init.sql:/docker-entrypoint-initdb.d/02-vector_init.sql:ro
     networks:
       - cps-network
 
@@ -53,6 +54,15 @@ services:
     ports:
       - "1025:1025" # SMTP port
       - "8025:8025" # Web UI
+    networks:
+      - cps-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: cps_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
     networks:
       - cps-network
 

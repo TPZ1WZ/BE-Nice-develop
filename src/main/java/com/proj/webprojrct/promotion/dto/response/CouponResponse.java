@@ -1,5 +1,6 @@
 package com.proj.webprojrct.promotion.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.proj.webprojrct.promotion.entity.Coupon;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class CouponResponse {
     private String description;
     private Coupon.DiscountType discountType;
     private Double discountValue;
+    @JsonProperty("minOrderValue")
     private Double minOrderAmount;
     private Double maxDiscountAmount;
     private Integer usageLimit;

@@ -1,5 +1,6 @@
 package com.proj.webprojrct.order.service;
 
+import com.proj.webprojrct.cart.entity.Cart;
 import com.proj.webprojrct.cart.repository.CartRepository;
 import com.proj.webprojrct.order.dto.*;
 import com.proj.webprojrct.order.entity.Order;
@@ -13,6 +14,8 @@ import com.proj.webprojrct.promotion.entity.Coupon;
 import com.proj.webprojrct.promotion.repository.CouponRepository;
 import com.proj.webprojrct.review.repository.ReviewRepository;
 import com.proj.webprojrct.user.entity.User;
+import com.proj.webprojrct.notification.service.NotificationService;
+import com.proj.webprojrct.loyalty.service.LoyaltyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,17 +37,39 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final PaymentService paymentService;
     private final ReviewRepository reviewRepository;
+    private final NotificationService notificationService;
+    private final com.proj.webprojrct.cart.repository.CartItemRepository cartItemRepository;
+    private final LoyaltyService loyaltyService;
 
     public void cancelOrder(User user, Long orderId) {
         var order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng."));
         if (!order.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Bạn không có quyền hủy đơn hàng này.");
         }
-        if (!List.of("PENDING", "WAITING_FOR_PAYMENT", "PAID").contains(order.getStatus().toUpperCase())) {
-            throw new RuntimeException("Chỉ có thể hủy đơn hàng ở trạng thái chờ xử lý hoặc chờ thanh toán.");
+        if (!List.of("PENDING", "CONFIRMED", "WAITING_FOR_PAYMENT", "PAID").contains(order.getStatus().toUpperCase())) {
+            throw new RuntimeException("Chỉ có thể hủy đơn hàng ở trạng thái chờ xử lý, đã xác nhận hoặc chờ thanh toán.");
         }
         order.setStatus("CANCELED");
+        
+        // Thêm ghi chú cho đơn hàng thanh toán VNPay
+        if ("VNPay".equalsIgnoreCase(order.getPaymentMethod()) || "VNPAY".equalsIgnoreCase(order.getPaymentMethod())) {
+            String refundNote = "Đơn hàng đã được hủy. Vui lòng liên hệ Admin để được hoàn tiền.";
+            if (order.getAdminNote() != null && !order.getAdminNote().isEmpty()) {
+                order.setAdminNote(order.getAdminNote() + "\n" + refundNote);
+            } else {
+                order.setAdminNote(refundNote);
+            }
+        }
+        
         orderRepository.save(order);
+        
+        // Tạo thông báo hủy đơn hàng
+        notificationService.createOrderNotification(
+            user.getId(),
+            orderId,
+            "CANCELED",
+            "Đơn hàng #" + orderId + " đã bị hủy"
+        );
 
         for (var item : order.getItems()) {
             productRepository.findById(item.getProduct().getId()).ifPresent(pt -> {
@@ -58,11 +83,61 @@ public class OrderService {
         });
     }
 
-    public String placeOrder(User user, String shippingAddress, String paymentMethod, String phone, String couponCode) {
-        var cart = cartRepository.findByUserId(user.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy giỏ hàng cho người dùng."));
-        if (cart.getItems().isEmpty()) {
-            throw new RuntimeException("Giỏ hàng trống, không thể đặt hàng.");
+    public String placeOrder(User user, String receiverName, String shippingAddress, String paymentMethod, String phone, String couponCode, String customerNote, Integer nikeCoinUsed) {
+        System.out.println("🔍 [ORDER SERVICE] placeOrder called with:");
+        System.out.println("  - User: " + user.getEmail());
+        System.out.println("  - User ID: " + user.getId());
+        System.out.println("  - Receiver Name: " + receiverName);
+        System.out.println("  - Shipping Address: " + shippingAddress);
+        System.out.println("  - Payment Method: " + paymentMethod);
+        System.out.println("  - Phone: " + phone);
+        System.out.println("  - Coupon Code: " + couponCode);
+        System.out.println("  - Customer Note: " + customerNote);
+        System.out.println("  - Nike Coin Used: " + nikeCoinUsed);
+        
+        // 🔒 Hủy các order cũ đang WAITING_FOR_PAYMENT (tránh duplicate order)
+        if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
+            var existingOrders = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
+                .stream()
+                .filter(o -> "WAITING_FOR_PAYMENT".equals(o.getStatus()))
+                .filter(o -> o.getCreatedAt().isAfter(java.time.LocalDateTime.now().minusMinutes(15))) // Order trong vòng 15 phút
+                .toList();
+            
+            if (!existingOrders.isEmpty()) {
+                System.out.println("⚠️ [ORDER SERVICE] Found " + existingOrders.size() + " existing WAITING_FOR_PAYMENT orders");
+                for (var oldOrder : existingOrders) {
+                    System.out.println("  - Cancelling order #" + oldOrder.getId());
+                    oldOrder.setStatus("CANCELLED");
+                    orderRepository.save(oldOrder);
+                }
+            }
         }
+        
+        // Auto-create cart if not exists
+        var cart = cartRepository.findByUserId(user.getId()).orElseGet(() -> {
+            System.out.println("⚠️ Cart not found for user " + user.getEmail() + ", creating new cart...");
+            var newCart = new Cart();
+            newCart.setUser(user);
+            return cartRepository.save(newCart);
+        });
+        
+        System.out.println("🛒 [CART CHECK] Cart ID: " + cart.getId());
+        System.out.println("🛒 [CART CHECK] Cart User ID: " + cart.getUser().getId());
+        
+        // ⚡ FIX: Load items trực tiếp từ database thay vì dùng lazy loading
+        var cartItems = cartItemRepository.findAllByCartId(cart.getId());
+        System.out.println("🛒 [CART CHECK] Cart Items from DB: " + cartItems);
+        System.out.println("🛒 [CART CHECK] Cart Items Size: " + (cartItems != null ? cartItems.size() : "NULL"));
+        System.out.println("🛒 [CART CHECK] Cart Total Price: " + cart.getTotalPrice());
+        System.out.println("🛒 [CART CHECK] Cart Total Quantity: " + cart.getTotalQuantity());
+        
+        if (cartItems == null || cartItems.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng trống, không thể đặt hàng. Vui lòng thêm sản phẩm vào giỏ hàng trước khi đặt hàng.");
+        }
+        
+        // Set items vào cart để dùng cho logic phía sau
+        cart.getItems().clear();
+        cart.getItems().addAll(cartItems);
         Coupon couponItem = null;
         double totalBeforeDiscount = cart.getTotalPrice();
 
@@ -81,31 +156,79 @@ public class OrderService {
         var order = new Order();
         order.setUser(user);
         order.setStatus("PENDING");
+        order.setReceiverName(receiverName);
         order.setPhone(phone);
         order.setQuantity(cart.getTotalQuantity());
         order.setPaymentMethod(paymentMethod);
         order.setShippingAddress(shippingAddress);
+        order.setShippingFee(30000.0); // Phí ship cố định 30,000đ
+        order.setCustomerNote(customerNote);
+        order.setNikeCoinUsed(nikeCoinUsed != null ? nikeCoinUsed : 0);
+        
+        System.out.println("📝 [ORDER SERVICE] Setting order fields:");
+        System.out.println("  - ReceiverName set to: " + order.getReceiverName());
+        System.out.println("  - ShippingAddress set to: " + order.getShippingAddress());
+        System.out.println("  - PaymentMethod set to: " + order.getPaymentMethod());
+        System.out.println("  - Phone set to: " + order.getPhone());
+        
         order.setCoupon(couponItem);
         double totalAfterDiscount = totalBeforeDiscount;
         double bonusDiscount = 0.0;
         if (couponItem != null) {
             order.setCoupon(couponItem);
+            System.out.println("🎫 [COUPON DEBUG] Before calculateDiscount:");
+            System.out.println("  - Coupon code: " + couponItem.getCode());
+            System.out.println("  - Discount type: " + couponItem.getDiscountType());
+            System.out.println("  - Discount value: " + couponItem.getDiscountValue());
+            System.out.println("  - Used count: " + couponItem.getUsedCount());
+            System.out.println("  - Usage limit: " + couponItem.getUsageLimit());
+            System.out.println("  - Order amount: " + totalBeforeDiscount);
+            System.out.println("  - isValid(): " + couponItem.isValid());
+            System.out.println("  - canApplyToOrder(): " + couponItem.canApplyToOrder(totalBeforeDiscount));
+            
             bonusDiscount = couponItem.calculateDiscount(totalBeforeDiscount);
+            
+            System.out.println("  - Calculated discount: " + bonusDiscount);
+            
             totalAfterDiscount = totalBeforeDiscount - bonusDiscount;
             couponItem.setUsedCount(couponItem.getUsedCount() + 1);
             couponRepository.save(couponItem);
         }
+        
+        // Xử lý Nike Coin
+        double nikeCoinDiscount = 0.0;
+        if (nikeCoinUsed != null && nikeCoinUsed > 0) {
+            // Validate user có đủ Nike Coin
+            Integer userBalance = user.getLoyaltyPoints();
+            if (userBalance == null || userBalance < nikeCoinUsed) {
+                throw new RuntimeException("Số dư Nike Coin không đủ. Bạn chỉ có " + (userBalance != null ? userBalance : 0) + " Nike Coin.");
+            }
+            
+            // Trừ Nike Coin từ user (1 Coin = 1 đồng) - will be saved after order is created
+            nikeCoinDiscount = nikeCoinUsed;
+            totalAfterDiscount -= nikeCoinDiscount;
+            
+            System.out.println("💰 [NIKE COIN] Will deduct " + nikeCoinUsed + " Nike Coins from user " + user.getEmail());
+        }
+        
         order.setTotalAmount(totalBeforeDiscount);
-        order.setFinalAmount(totalAfterDiscount);
-        order.setTotalDiscount(bonusDiscount);
+        order.setTotalDiscount(bonusDiscount); // Chỉ lưu coupon discount, Nike Coin có field riêng
+        // Tổng cộng = (Tổng sản phẩm - Giảm giá - Nike Coin) + Phí vận chuyển
+        order.setFinalAmount(totalAfterDiscount + order.getShippingFee());
 
         List<OrderItem> orderItems = new ArrayList<>();
         for (var item : cart.getItems()) {
             var orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(item.getProduct());
+            
+            // Lưu snapshot thông tin sản phẩm tại thời điểm mua
+            orderItem.setProductName(item.getProduct().getName());
+            orderItem.setProductImage(item.getProduct().getImages().isEmpty() ? null : item.getProduct().getImages().get(0));
+            
             orderItem.setQuantity(item.getQuantity());
             orderItem.setProductPrice(item.getProductPrice());
+            orderItem.setTotalPrice(item.getProductPrice() * item.getQuantity()); // Thành tiền = đơn giá * số lượng
             orderItem.setSize(item.getSize());
             orderItems.add(orderItem);
         }
@@ -120,14 +243,72 @@ public class OrderService {
             });
         });
         order.setItems(orderItems);
+        
+        System.out.println("💾 [ORDER SERVICE] Saving order to database...");
+        System.out.println("  - Before save - ReceiverName: " + order.getReceiverName());
+        System.out.println("  - Before save - ShippingAddress: " + order.getShippingAddress());
+        System.out.println("  - Before save - PaymentMethod: " + order.getPaymentMethod());
+        System.out.println("  - Before save - Phone: " + order.getPhone());
+        System.out.println("  - Before save - FinalAmount: " + order.getFinalAmount());
+        System.out.println("  - Before save - Quantity: " + order.getQuantity());
+        
         var newOrder = orderRepository.save(order);
+        
+        System.out.println("✅ [ORDER SERVICE] Order saved with ID: " + newOrder.getId());
+        System.out.println("  - After save - ReceiverName: " + newOrder.getReceiverName());
+        System.out.println("  - After save - ShippingAddress: " + newOrder.getShippingAddress());
+        System.out.println("  - After save - PaymentMethod: " + newOrder.getPaymentMethod());
+        System.out.println("  - After save - Phone: " + newOrder.getPhone());
+        System.out.println("  - After save - FinalAmount: " + newOrder.getFinalAmount());
+        System.out.println("  - After save - Quantity: " + newOrder.getQuantity());
+        
+        // Trừ Nike Coin sau khi order thành công
+        if (nikeCoinUsed != null && nikeCoinUsed > 0) {
+            loyaltyService.deductPoints(
+                user.getId(), 
+                nikeCoinUsed, 
+                "REDEEM", 
+                "Sử dụng Nike Coin cho đơn hàng #" + newOrder.getId(),
+                newOrder.getId()
+            );
+            System.out.println("💰 [NIKE COIN] Successfully deducted " + nikeCoinUsed + " coins for order #" + newOrder.getId());
+        }
+        
+        // Tạo thông báo đơn hàng mới
+        notificationService.createOrderNotification(
+            user.getId(),
+            newOrder.getId(),
+            "PENDING",
+            String.format("Đơn hàng của bạn đã được tạo thành công. Mã đơn: #%d\n" +
+                         "Đơn hàng đang ở trạng thái: Chờ xác nhận.\n%s",
+                         newOrder.getId(),
+                         java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+        );
+        
         cartRepository.delete(cart);
 
         if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
-            VnpayDTO vnPayOrder = paymentService.createPayment(new PaymentService.VnPayBody(newOrder.getTotalAmount(), "Thanh toan"));
+            System.out.println("💳 [ORDER SERVICE] Processing VNPAY payment...");
+            System.out.println("  - Order ID: " + newOrder.getId());
+            System.out.println("  - Final Amount: " + newOrder.getFinalAmount());
+            
+            // Sử dụng finalAmount (đã bao gồm phí ship và giảm giá) thay vì totalAmount
+            VnpayDTO vnPayOrder = paymentService.createPayment(
+                new PaymentService.VnPayBody(
+                    newOrder.getFinalAmount(), 
+                    "Thanh toan don hang #" + newOrder.getId()
+                )
+            );
+            
+            System.out.println("✅ [ORDER SERVICE] VNPay payment created");
+            System.out.println("  - Transaction ID: " + vnPayOrder.getTxnId());
+            System.out.println("  - Payment URL: " + vnPayOrder.getPaymentUrl());
+            
             newOrder.setTxnId(vnPayOrder.getTxnId());
             newOrder.setStatus("WAITING_FOR_PAYMENT");
             orderRepository.save(newOrder);
+            
+            System.out.println("✅ [ORDER SERVICE] Order updated with VNPAY status");
             return vnPayOrder.getPaymentUrl();
         }
         return null;
@@ -135,7 +316,9 @@ public class OrderService {
 
     public OrderDTO toOrderDTO(Order order, User user) {
         List<OrderItemDTO> itemDTOs = order.getItems().stream().map(item -> {
-            boolean reviewed = reviewRepository.existsByUserAndProduct(user, item.getProduct());
+            // Chỉ đánh dấu reviewed=true nếu đã có review được approve
+            // Nếu chỉ có review pending, vẫn cho phép edit/submit lại
+            boolean reviewed = reviewRepository.existsByUserAndProductAndApproved(user, item.getProduct(), true);
             var p = item.getProduct();
             var productDTO = ProductOrderDTO.builder()
                     .id(p.getId())
@@ -153,8 +336,9 @@ public class OrderService {
             return OrderItemDTO.builder()
                     .id(item.getId())
                     .productId(item.getProduct().getId())
-                    .productName(item.getProduct().getName())
-                    .productImages(item.getProduct().getImages())
+                    // Sử dụng thông tin snapshot tại thời điểm mua, không lấy từ Product hiện tại
+                    .productName(item.getProductName())
+                    .productImages(List.of(item.getProductImage()))
                     .quantity(item.getQuantity())
                     .productPrice(item.getProductPrice())
                     .totalPrice(item.getTotalPrice())
@@ -194,23 +378,135 @@ public class OrderService {
                     .email(u.getEmail())
                     .phone(u.getPhone())
                     .build();
+            System.out.println("👤 [ORDER DTO] User info mapped:");
+            System.out.println("  - ID: " + userDTO.getId());
+            System.out.println("  - Full Name: " + userDTO.getFullName());
+            System.out.println("  - Email: " + userDTO.getEmail());
+            System.out.println("  - Phone: " + userDTO.getPhone());
+        } else {
+            System.out.println("⚠️ [ORDER DTO] Order has no user!");
+        }
+
+        // Fix cho đơn hàng cũ: nếu shippingFee = null hoặc 0 thì set = 30000
+        Double shippingFee = order.getShippingFee();
+        if (shippingFee == null || shippingFee == 0.0) {
+            shippingFee = 30000.0;
+        }
+        
+        // Tính lại finalAmount nếu cần (đơn hàng cũ có thể chưa cộng shipping fee)
+        Double finalAmount = order.getFinalAmount();
+        Double totalAmount = order.getTotalAmount() != null ? order.getTotalAmount() : 0.0;
+        Double totalDiscount = order.getTotalDiscount() != null ? order.getTotalDiscount() : 0.0;
+        Integer nikeCoinUsed = order.getNikeCoinUsed() != null ? order.getNikeCoinUsed() : 0;
+        
+        // Kiểm tra nếu finalAmount chưa bao gồm shipping fee hoặc Nike Coin
+        // Công thức: Tổng cộng = (Tạm tính - Giảm giá coupon - Nike Coin) + Phí ship
+        Double expectedFinalAmount = totalAmount - totalDiscount - nikeCoinUsed + shippingFee;
+        if (Math.abs(finalAmount - expectedFinalAmount) > 0.01) {
+            // Nếu sai lệch thì tính lại
+            finalAmount = expectedFinalAmount;
         }
 
         return OrderDTO.builder()
                 .id(order.getId())
-                .totalAmount(order.getTotalAmount())
-                .totalDiscount(order.getTotalDiscount())
-                .finalAmount(order.getFinalAmount())
+                .totalAmount(totalAmount)
+                .totalDiscount(totalDiscount)
+                .finalAmount(finalAmount)
+                .shippingFee(shippingFee)
+                .nikeCoinUsed(order.getNikeCoinUsed())
                 .quantity(order.getQuantity())
+                .receiverName(order.getReceiverName())
                 .phone(order.getPhone())
                 .status(order.getStatus())
                 .paymentMethod(order.getPaymentMethod())
                 .shippingAddress(order.getShippingAddress())
                 .txnId(order.getTxnId())
+                .customerNote(order.getCustomerNote())
+                .adminNote(order.getAdminNote())
                 .items(itemDTOs)
                 .createdAt(order.getCreatedAt())
                 .coupon(couponDTO) // gán coupon nếu có
                 .user(userDTO)
                 .build();
+    }
+    
+    /**
+     * Lấy tất cả đơn hàng của user
+     */
+    public List<OrderDTO> getUserOrders(User user) {
+        var orders = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        return orders.stream()
+                .map(order -> toOrderDTO(order, user))
+                .toList();
+    }
+    
+    /**
+     * Lấy chi tiết 1 đơn hàng của user
+     */
+    public OrderDTO getOrderById(User user, Long orderId) {
+        var order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        
+        // Kiểm tra xem order có thuộc user không
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Bạn không có quyền xem đơn hàng này");
+        }
+        
+        return toOrderDTO(order, user);
+    }
+    
+    /**
+     * Cập nhật trạng thái đơn hàng và xóa giỏ hàng sau khi thanh toán VNPay thành công
+     */
+    public void updateOrderStatusByTxnRef(String txnRef) {
+        System.out.println("🔄 [ORDER SERVICE] Updating order status by TxnRef: " + txnRef);
+        
+        try {
+            // Tìm order theo txnId
+            Optional<Order> orderOpt = orderRepository.findAll().stream()
+                    .filter(o -> txnRef.equals(o.getTxnId()))
+                    .findFirst();
+            
+            if (orderOpt.isEmpty()) {
+                System.out.println("❌ [ORDER SERVICE] Order not found with TxnRef: " + txnRef);
+                return;
+            }
+            
+            Order order = orderOpt.get();
+            System.out.println("✅ [ORDER SERVICE] Found order ID: " + order.getId());
+            System.out.println("  - Current status: " + order.getStatus());
+            System.out.println("  - User ID: " + order.getUser().getId());
+            
+            // Cập nhật trạng thái đơn hàng sang PENDING (chờ xác nhận từ admin)
+            order.setStatus("PENDING");
+            orderRepository.save(order);
+            System.out.println("✅ [ORDER SERVICE] Order status updated to PENDING (waiting for confirmation)");
+            
+            // Tạo thông báo thanh toán thành công
+            notificationService.createOrderNotification(
+                order.getUser().getId(),
+                order.getId(),
+                "PENDING",
+                String.format("Đơn hàng #%d đã thanh toán thành công.\n" +
+                             "Đơn hàng đang ở trạng thái: Chờ xác nhận.\n%s",
+                             order.getId(),
+                             java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+            );
+            
+            // Xóa giỏ hàng của user (nếu có)
+            Optional<Cart> cartOpt = cartRepository.findByUserId(order.getUser().getId());
+            if (cartOpt.isPresent()) {
+                Cart cart = cartOpt.get();
+                System.out.println("🗑️ [ORDER SERVICE] Deleting cart ID: " + cart.getId());
+                cartRepository.delete(cart);
+                System.out.println("✅ [ORDER SERVICE] Cart deleted successfully");
+            } else {
+                System.out.println("ℹ️ [ORDER SERVICE] No cart found for user");
+            }
+            
+        } catch (Exception e) {
+            System.out.println("❌ [ORDER SERVICE] Error updating order: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

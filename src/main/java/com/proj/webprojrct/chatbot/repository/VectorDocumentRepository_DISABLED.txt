@@ -1,0 +1,2 @@
+// Temporarily disabled - requires pgvector extension
+// See VectorDocument.java entity

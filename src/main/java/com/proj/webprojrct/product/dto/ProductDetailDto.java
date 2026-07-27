@@ -19,6 +19,7 @@ public class ProductDetailDto {
     private Double price;
     private Integer stock;
     private List<String> images;
+    private List<String> sizes;
     private List<Long> categoryId;
     private Long reviewId;
     private Boolean isFavorite;

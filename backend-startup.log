@@ -1,0 +1,827 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.proj:webprojrct >-------------------------
+[INFO] Building webprojrct 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.5:run (default-cli) > test-compile @ webprojrct >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ webprojrct ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 8 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ webprojrct ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 242 source files with javac [debug release 17] to target\classes
+[WARNING] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/review/entity/ReviewReply.java:[26,31] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/review/entity/ReviewReply.java:[40,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/review/entity/ReviewReply.java:[43,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/review/entity/ReviewReply.java:[46,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/review/entity/Review.java:[74,31] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/auth/JwtService.java: D:\project-cuoi-ky1\BE-Nice-develop\src\main\java\com\proj\webprojrct\auth\JwtService.java uses or overrides a deprecated API.
+[INFO] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/auth/JwtService.java: Recompile with -Xlint:deprecation for details.
+[INFO] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/admin/service/AdminDashboardService.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/project-cuoi-ky1/BE-Nice-develop/src/main/java/com/proj/webprojrct/admin/service/AdminDashboardService.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ webprojrct ---
+[INFO] skip non existing resourceDirectory D:\project-cuoi-ky1\BE-Nice-develop\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ webprojrct ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 4 source files with javac [debug release 17] to target\test-classes
+[WARNING] The following options were not recognized by any processor: '[mapstruct.unmappedTargetPolicy, mapstruct.defaultComponentModel]'
+[INFO] /D:/project-cuoi-ky1/BE-Nice-develop/src/test/java/com/proj/webprojrct/AuthenticationFlowTest.java: D:\project-cuoi-ky1\BE-Nice-develop\src\test\java\com\proj\webprojrct\AuthenticationFlowTest.java uses unchecked or unsafe operations.
+[INFO] /D:/project-cuoi-ky1/BE-Nice-develop/src/test/java/com/proj/webprojrct/AuthenticationFlowTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] <<< spring-boot:3.5.5:run (default-cli) < test-compile @ webprojrct <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.5:run (default-cli) @ webprojrct ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.5)
+
+2025-12-31T16:33:54.368+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Starting WebprojrctApplication using Java 17.0.8 with PID 24368 (D:\project-cuoi-ky1\BE-Nice-develop\target\classes started by as in D:\project-cuoi-ky1\BE-Nice-develop)
+2025-12-31T16:33:54.370+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : No active profile set, falling back to 1 default profile: "default"
+2025-12-31T16:33:54.611+07:00  INFO 24368 --- [webproject] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-12-31T16:33:54.612+07:00  INFO 24368 --- [webproject] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-12-31T16:33:56.111+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:33:56.111+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-31T16:33:56.397+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 277 ms. Found 21 JPA repository interfaces.
+2025-12-31T16:33:56.417+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:33:56.419+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-12-31T16:33:56.448+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminOrderItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.448+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminOrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.448+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.448+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminUserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.449+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.cart.repository.CartItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.450+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.cart.repository.CartRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.450+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.category.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.450+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.category.repo.CategoryRepo; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.451+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.ChatConversationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.451+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.ChatMessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.451+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.VectorDocumentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.452+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.favorite.repository.FavoriteRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.452+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.notification.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.453+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.order.repository.OrderItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.453+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.order.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.453+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.product.repository.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.453+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.promotion.repository.CouponRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.454+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.review.repository.ReviewReplyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.454+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.review.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.454+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.user.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.454+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.user.repository.UserTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:33:56.454+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 21 ms. Found 0 Redis repository interfaces.
+2025-12-31T16:33:57.166+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-12-31T16:33:57.183+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-31T16:33:57.184+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-12-31T16:33:57.238+07:00  INFO 24368 --- [webproject] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-31T16:33:57.239+07:00  INFO 24368 --- [webproject] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2612 ms
+2025-12-31T16:33:57.730+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-31T16:33:57.952+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2d5a7bcd
+2025-12-31T16:33:57.954+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-31T16:33:58.005+07:00  WARN 24368 --- [webproject] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-31T16:33:58.244+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-31T16:33:59.859+07:00  INFO 24368 --- [webproject] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:00.088+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-12-31T16:34:00.438+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.security.SecurityDebugFilter   : Filter 'securityDebugFilter' configured for use
+2025-12-31T16:34:00.441+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2025-12-31T16:34:02.281+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.EmbeddingService   : ? Initializing Embedding Model (all-MiniLM-L6-v2)...
+2025-12-31T16:34:03.597+07:00  INFO 24368 --- [webproject] [  restartedMain] ai.djl.util.Platform                     : Found matching platform from: jar:file:/C:/Users/as/.m2/repository/ai/djl/huggingface/tokenizers/0.30.0/tokenizers-0.30.0.jar!/native/lib/tokenizers.properties
+2025-12-31T16:34:03.679+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.EmbeddingService   : ? Embedding Model initialized successfully
+2025-12-31T16:34:03.683+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Initializing Google Gemini Chat Model...
+2025-12-31T16:34:03.683+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? API Key configured (length: 39)
+2025-12-31T16:34:03.889+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Google Gemini Chat Model initialized successfully
+2025-12-31T16:34:05.379+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Gemini API test successful: OK
+2025-12-31T16:34:05.990+07:00  WARN 24368 --- [webproject] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-31T16:34:06.260+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-12-31T16:34:06.308+07:00  INFO 24368 --- [webproject] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2025-12-31T16:34:06.368+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.SecurityConfiguration        : CSRF protection disabled
+2025-12-31T16:34:06.368+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.SecurityConfiguration        : Session management: STATELESS (JWT-based authentication)
+2025-12-31T16:34:06.526+07:00  WARN 24368 --- [webproject] [  restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-31T16:34:07.809+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-31T16:34:07.885+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-12-31T16:34:07.899+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Started WebprojrctApplication in 13.921 seconds (process running for 14.411)
+2025-12-31T16:34:21.352+07:00  INFO 24368 --- [webproject] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 348 class path changes (0 additions, 347 deletions, 1 modification)
+2025-12-31T16:34:21.357+07:00  INFO 24368 --- [webproject] [       Thread-6] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-12-31T16:34:21.398+07:00  INFO 24368 --- [webproject] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-12-31T16:34:21.428+07:00  INFO 24368 --- [webproject] [       Thread-6] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:21.430+07:00  INFO 24368 --- [webproject] [       Thread-6] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-31T16:34:21.434+07:00  INFO 24368 --- [webproject] [       Thread-6] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.5)
+
+2025-12-31T16:34:21.539+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Starting WebprojrctApplication using Java 17.0.8 with PID 24368 (D:\project-cuoi-ky1\BE-Nice-develop\target\classes started by as in D:\project-cuoi-ky1\BE-Nice-develop)
+2025-12-31T16:34:21.540+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : No active profile set, falling back to 1 default profile: "default"
+2025-12-31T16:34:21.911+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:34:21.911+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-31T16:34:21.913+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 0 ms. Found 0 JPA repository interfaces.
+2025-12-31T16:34:21.915+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:34:21.916+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-12-31T16:34:21.918+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2025-12-31T16:34:22.037+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-12-31T16:34:22.038+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-31T16:34:22.038+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-12-31T16:34:22.066+07:00  INFO 24368 --- [webproject] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-31T16:34:22.066+07:00  INFO 24368 --- [webproject] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 525 ms
+2025-12-31T16:34:22.156+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2025-12-31T16:34:22.194+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@22907565
+2025-12-31T16:34:22.195+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2025-12-31T16:34:22.198+07:00  WARN 24368 --- [webproject] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-31T16:34:22.208+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-31T16:34:22.225+07:00  INFO 24368 --- [webproject] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:22.251+07:00  WARN 24368 --- [webproject] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-31T16:34:22.329+07:00  WARN 24368 --- [webproject] [  restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-31T16:34:23.298+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-12-31T16:34:23.314+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-31T16:34:23.330+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-12-31T16:34:23.342+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Started WebprojrctApplication in 1.837 seconds (process running for 29.855)
+2025-12-31T16:34:23.349+07:00  INFO 24368 --- [webproject] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation delta:
+
+
+==========================
+CONDITION EVALUATION DELTA
+==========================
+
+
+Positive matches:
+-----------------
+
+   MailHealthContributorAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.mail.javamail.JavaMailSenderImpl' (OnClassCondition)
+      - @ConditionalOnEnabledHealthIndicator management.health.defaults.enabled is considered true (OnEnabledHealthIndicatorCondition)
+      - @ConditionalOnBean (types: org.springframework.mail.javamail.JavaMailSenderImpl; SearchStrategy: all) found bean 'mailSender' (OnBeanCondition)
+
+   MailHealthContributorAutoConfiguration#mailHealthContributor matched:
+      - @ConditionalOnMissingBean (names: mailHealthIndicator,mailHealthContributor; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MailSenderAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.mail.internet.MimeMessage', 'jakarta.activation.MimeType', 'org.springframework.mail.MailSender' (OnClassCondition)
+      - AnyNestedCondition 1 matched 1 did not; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.JndiNameProperty @ConditionalOnProperty (spring.mail.jndi-name) did not find property 'spring.mail.jndi-name'; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.HostProperty @ConditionalOnProperty (spring.mail.host) matched (MailSenderAutoConfiguration.MailSenderCondition)
+      - @ConditionalOnMissingBean (types: org.springframework.mail.MailSender; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MailSenderPropertiesConfiguration#mailSender matched:
+      - @ConditionalOnMissingBean (types: org.springframework.mail.javamail.JavaMailSender; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   OAuth2ClientWebSecurityAutoConfiguration.OAuth2SecurityFilterChainConfiguration matched:
+      - AllNestedConditions 2 matched 0 did not; NestedCondition on DefaultWebSecurityCondition.Beans @ConditionalOnMissingBean (types: org.springframework.security.web.SecurityFilterChain; SearchStrategy: all) did not find any beans; NestedCondition on DefaultWebSecurityCondition.Classes @ConditionalOnClass found required classes 'org.springframework.security.web.SecurityFilterChain', 'org.springframework.security.config.annotation.web.builders.HttpSecurity' (DefaultWebSecurityCondition)
+
+   SpringBootWebSecurityConfiguration.WebSecurityEnablerConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.config.annotation.web.configuration.EnableWebSecurity' (OnClassCondition)
+      - @ConditionalOnMissingBean (names: springSecurityFilterChain; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   CacheMetricsAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBean (types: org.springframework.cache.CacheManager; SearchStrategy: all) did not find any beans of type org.springframework.cache.CacheManager (OnBeanCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-12-31T16:34:32.018+07:00  INFO 24368 --- [webproject] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 342 class path changes (342 additions, 0 deletions, 0 modifications)
+2025-12-31T16:34:32.022+07:00  INFO 24368 --- [webproject] [       Thread-8] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-12-31T16:34:32.094+07:00  INFO 24368 --- [webproject] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-12-31T16:34:32.111+07:00  INFO 24368 --- [webproject] [       Thread-8] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:32.112+07:00  INFO 24368 --- [webproject] [       Thread-8] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2025-12-31T16:34:32.116+07:00  INFO 24368 --- [webproject] [       Thread-8] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.5)
+
+2025-12-31T16:34:32.238+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Starting WebprojrctApplication using Java 17.0.8 with PID 24368 (D:\project-cuoi-ky1\BE-Nice-develop\target\classes started by as in D:\project-cuoi-ky1\BE-Nice-develop)
+2025-12-31T16:34:32.238+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : No active profile set, falling back to 1 default profile: "default"
+2025-12-31T16:34:32.951+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:34:32.951+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-31T16:34:33.014+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 62 ms. Found 21 JPA repository interfaces.
+2025-12-31T16:34:33.016+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:34:33.016+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-12-31T16:34:33.026+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminOrderItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.026+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminOrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.026+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.026+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminUserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.026+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.cart.repository.CartItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.cart.repository.CartRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.category.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.category.repo.CategoryRepo; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.ChatConversationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.ChatMessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.VectorDocumentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.favorite.repository.FavoriteRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.notification.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.order.repository.OrderItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.order.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.product.repository.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.promotion.repository.CouponRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.review.repository.ReviewReplyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.review.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.user.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.user.repository.UserTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:34:33.027+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 10 ms. Found 0 Redis repository interfaces.
+2025-12-31T16:34:33.131+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-12-31T16:34:33.132+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-31T16:34:33.132+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-12-31T16:34:33.158+07:00  INFO 24368 --- [webproject] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-31T16:34:33.158+07:00  INFO 24368 --- [webproject] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 917 ms
+2025-12-31T16:34:33.231+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2025-12-31T16:34:33.256+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@6252c28c
+2025-12-31T16:34:33.256+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2025-12-31T16:34:33.259+07:00  WARN 24368 --- [webproject] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-31T16:34:33.265+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-31T16:34:33.646+07:00  INFO 24368 --- [webproject] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:33.688+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.security.SecurityDebugFilter   : Filter 'securityDebugFilter' configured for use
+2025-12-31T16:34:33.688+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2025-12-31T16:34:33.966+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.EmbeddingService   : ? Initializing Embedding Model (all-MiniLM-L6-v2)...
+2025-12-31T16:34:33.966+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.EmbeddingService   : ? Embedding Model initialized successfully
+2025-12-31T16:34:33.967+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Initializing Google Gemini Chat Model...
+2025-12-31T16:34:33.967+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? API Key configured (length: 39)
+2025-12-31T16:34:33.967+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Google Gemini Chat Model initialized successfully
+2025-12-31T16:34:35.251+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Gemini API test successful: OK
+2025-12-31T16:34:35.410+07:00  WARN 24368 --- [webproject] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-31T16:34:35.510+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-12-31T16:34:35.522+07:00  INFO 24368 --- [webproject] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2025-12-31T16:34:35.525+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.SecurityConfiguration        : CSRF protection disabled
+2025-12-31T16:34:35.525+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.SecurityConfiguration        : Session management: STATELESS (JWT-based authentication)
+2025-12-31T16:34:35.555+07:00  WARN 24368 --- [webproject] [  restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-31T16:34:36.119+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-31T16:34:36.132+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-12-31T16:34:36.140+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Started WebprojrctApplication in 3.943 seconds (process running for 42.651)
+2025-12-31T16:34:36.141+07:00  INFO 24368 --- [webproject] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation delta:
+
+
+==========================
+CONDITION EVALUATION DELTA
+==========================
+
+
+Positive matches:
+-----------------
+
+   CacheMetricsAutoConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.cache.CacheManager; SearchStrategy: all) found bean 'cacheManager' (OnBeanCondition)
+
+   CacheMetricsRegistrarConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider,io.micrometer.core.instrument.MeterRegistry; SearchStrategy: all) found beans 'simpleMeterRegistry', 'redisCacheMeterBinderProvider' (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   MailHealthContributorAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBean (types: org.springframework.mail.javamail.JavaMailSenderImpl; SearchStrategy: all) did not find any beans of type org.springframework.mail.javamail.JavaMailSenderImpl (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.mail.javamail.JavaMailSenderImpl' (OnClassCondition)
+         - @ConditionalOnEnabledHealthIndicator management.health.defaults.enabled is considered true (OnEnabledHealthIndicatorCondition)
+
+   MailSenderAutoConfiguration:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.mail.MailSender; SearchStrategy: all) found beans of type 'org.springframework.mail.MailSender' javaMailSender (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required classes 'jakarta.mail.internet.MimeMessage', 'jakarta.activation.MimeType', 'org.springframework.mail.MailSender' (OnClassCondition)
+         - AnyNestedCondition 1 matched 1 did not; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.JndiNameProperty @ConditionalOnProperty (spring.mail.jndi-name) did not find property 'spring.mail.jndi-name'; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.HostProperty @ConditionalOnProperty (spring.mail.host) matched (MailSenderAutoConfiguration.MailSenderCondition)
+
+   OAuth2ClientWebSecurityAutoConfiguration.OAuth2SecurityFilterChainConfiguration:
+      Did not match:
+         - AllNestedConditions 1 matched 1 did not; NestedCondition on DefaultWebSecurityCondition.Beans @ConditionalOnMissingBean (types: org.springframework.security.web.SecurityFilterChain; SearchStrategy: all) found beans of type 'org.springframework.security.web.SecurityFilterChain' filterChain; NestedCondition on DefaultWebSecurityCondition.Classes @ConditionalOnClass found required classes 'org.springframework.security.web.SecurityFilterChain', 'org.springframework.security.config.annotation.web.builders.HttpSecurity' (DefaultWebSecurityCondition)
+
+   SpringBootWebSecurityConfiguration.WebSecurityEnablerConfiguration:
+      Did not match:
+         - @ConditionalOnMissingBean (names: springSecurityFilterChain; SearchStrategy: all) found beans named springSecurityFilterChain (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.config.annotation.web.configuration.EnableWebSecurity' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-12-31T16:34:52.809+07:00  INFO 24368 --- [webproject] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 342 class path changes (0 additions, 342 deletions, 0 modifications)
+2025-12-31T16:34:52.811+07:00  INFO 24368 --- [webproject] [      Thread-12] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-12-31T16:34:52.843+07:00  INFO 24368 --- [webproject] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-12-31T16:34:52.853+07:00  INFO 24368 --- [webproject] [      Thread-12] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:52.853+07:00  INFO 24368 --- [webproject] [      Thread-12] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2025-12-31T16:34:52.855+07:00  INFO 24368 --- [webproject] [      Thread-12] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.5)
+
+2025-12-31T16:34:52.941+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Starting WebprojrctApplication using Java 17.0.8 with PID 24368 (D:\project-cuoi-ky1\BE-Nice-develop\target\classes started by as in D:\project-cuoi-ky1\BE-Nice-develop)
+2025-12-31T16:34:52.942+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : No active profile set, falling back to 1 default profile: "default"
+2025-12-31T16:34:53.245+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:34:53.245+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-31T16:34:53.258+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 11 ms. Found 0 JPA repository interfaces.
+2025-12-31T16:34:53.260+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:34:53.261+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-12-31T16:34:53.271+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 9 ms. Found 0 Redis repository interfaces.
+2025-12-31T16:34:53.342+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-12-31T16:34:53.343+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-31T16:34:53.343+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-12-31T16:34:53.364+07:00  INFO 24368 --- [webproject] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-31T16:34:53.366+07:00  INFO 24368 --- [webproject] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 422 ms
+2025-12-31T16:34:53.433+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2025-12-31T16:34:53.470+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Added connection org.postgresql.jdbc.PgConnection@21897d3c
+2025-12-31T16:34:53.471+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2025-12-31T16:34:53.480+07:00  WARN 24368 --- [webproject] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-31T16:34:53.488+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-31T16:34:53.504+07:00  INFO 24368 --- [webproject] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:53.529+07:00  WARN 24368 --- [webproject] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-31T16:34:53.604+07:00  WARN 24368 --- [webproject] [  restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-31T16:34:54.399+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-12-31T16:34:54.411+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-31T16:34:54.423+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-12-31T16:34:54.434+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Started WebprojrctApplication in 1.514 seconds (process running for 60.946)
+2025-12-31T16:34:54.436+07:00  INFO 24368 --- [webproject] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation delta:
+
+
+==========================
+CONDITION EVALUATION DELTA
+==========================
+
+
+Positive matches:
+-----------------
+
+   MailHealthContributorAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.mail.javamail.JavaMailSenderImpl' (OnClassCondition)
+      - @ConditionalOnEnabledHealthIndicator management.health.defaults.enabled is considered true (OnEnabledHealthIndicatorCondition)
+      - @ConditionalOnBean (types: org.springframework.mail.javamail.JavaMailSenderImpl; SearchStrategy: all) found bean 'mailSender' (OnBeanCondition)
+
+   MailHealthContributorAutoConfiguration#mailHealthContributor matched:
+      - @ConditionalOnMissingBean (names: mailHealthIndicator,mailHealthContributor; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MailSenderAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.mail.internet.MimeMessage', 'jakarta.activation.MimeType', 'org.springframework.mail.MailSender' (OnClassCondition)
+      - AnyNestedCondition 1 matched 1 did not; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.JndiNameProperty @ConditionalOnProperty (spring.mail.jndi-name) did not find property 'spring.mail.jndi-name'; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.HostProperty @ConditionalOnProperty (spring.mail.host) matched (MailSenderAutoConfiguration.MailSenderCondition)
+      - @ConditionalOnMissingBean (types: org.springframework.mail.MailSender; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MailSenderPropertiesConfiguration#mailSender matched:
+      - @ConditionalOnMissingBean (types: org.springframework.mail.javamail.JavaMailSender; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   OAuth2ClientWebSecurityAutoConfiguration.OAuth2SecurityFilterChainConfiguration matched:
+      - AllNestedConditions 2 matched 0 did not; NestedCondition on DefaultWebSecurityCondition.Beans @ConditionalOnMissingBean (types: org.springframework.security.web.SecurityFilterChain; SearchStrategy: all) did not find any beans; NestedCondition on DefaultWebSecurityCondition.Classes @ConditionalOnClass found required classes 'org.springframework.security.web.SecurityFilterChain', 'org.springframework.security.config.annotation.web.builders.HttpSecurity' (DefaultWebSecurityCondition)
+
+   SpringBootWebSecurityConfiguration.WebSecurityEnablerConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.config.annotation.web.configuration.EnableWebSecurity' (OnClassCondition)
+      - @ConditionalOnMissingBean (names: springSecurityFilterChain; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   CacheMetricsAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBean (types: org.springframework.cache.CacheManager; SearchStrategy: all) did not find any beans of type org.springframework.cache.CacheManager (OnBeanCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-12-31T16:34:57.839+07:00  INFO 24368 --- [webproject] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 7 class path changes (7 additions, 0 deletions, 0 modifications)
+2025-12-31T16:34:57.841+07:00  INFO 24368 --- [webproject] [      Thread-16] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-12-31T16:34:57.873+07:00  INFO 24368 --- [webproject] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-12-31T16:34:57.880+07:00  INFO 24368 --- [webproject] [      Thread-16] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:57.881+07:00  INFO 24368 --- [webproject] [      Thread-16] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2025-12-31T16:34:57.884+07:00  INFO 24368 --- [webproject] [      Thread-16] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.5)
+
+2025-12-31T16:34:57.971+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Starting WebprojrctApplication using Java 17.0.8 with PID 24368 (D:\project-cuoi-ky1\BE-Nice-develop\target\classes started by as in D:\project-cuoi-ky1\BE-Nice-develop)
+2025-12-31T16:34:57.972+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : No active profile set, falling back to 1 default profile: "default"
+2025-12-31T16:34:58.336+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:34:58.336+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-31T16:34:58.347+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 9 ms. Found 0 JPA repository interfaces.
+2025-12-31T16:34:58.348+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:34:58.348+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-12-31T16:34:58.357+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 7 ms. Found 0 Redis repository interfaces.
+2025-12-31T16:34:58.435+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-12-31T16:34:58.436+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-31T16:34:58.437+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-12-31T16:34:58.465+07:00  INFO 24368 --- [webproject] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-31T16:34:58.465+07:00  INFO 24368 --- [webproject] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 492 ms
+2025-12-31T16:34:58.523+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Starting...
+2025-12-31T16:34:58.552+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-5 - Added connection org.postgresql.jdbc.PgConnection@2532b5ec
+2025-12-31T16:34:58.553+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Start completed.
+2025-12-31T16:34:58.556+07:00  WARN 24368 --- [webproject] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-31T16:34:58.562+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-31T16:34:58.618+07:00  INFO 24368 --- [webproject] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:58.622+07:00  WARN 24368 --- [webproject] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'adminOrderMapperImpl': Lookup method resolution failed
+2025-12-31T16:34:58.622+07:00  INFO 24368 --- [webproject] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:34:58.623+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown initiated...
+2025-12-31T16:34:58.623+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown completed.
+2025-12-31T16:34:58.624+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-12-31T16:34:58.655+07:00 ERROR 24368 --- [webproject] [  restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'adminOrderMapperImpl': Lookup method resolution failed
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.checkLookupMethods(AutowiredAnnotationBeanPostProcessor.java:498) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:368) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineConstructorsFromBeanPostProcessors(AbstractAutowireCapableBeanFactory.java:1334) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1229) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1222) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1188) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1123) ~[spring-beans-6.2.10.jar:6.2.10]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987) ~[spring-context-6.2.10.jar:6.2.10]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.10.jar:6.2.10]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.5.jar:3.5.5]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.5.jar:3.5.5]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.5.jar:3.5.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.5.jar:3.5.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.5.jar:3.5.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.5.jar:3.5.5]
+	at com.proj.webprojrct.WebprojrctApplication.main(WebprojrctApplication.java:14) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.5.5.jar:3.5.5]
+Caused by: java.lang.IllegalStateException: Failed to introspect Class [com.proj.webprojrct.admin.mapper.AdminOrderMapperImpl] from ClassLoader [org.springframework.boot.devtools.restart.classloader.RestartClassLoader@21bd7979]
+	at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:483) ~[spring-core-6.2.10.jar:6.2.10]
+	at org.springframework.util.ReflectionUtils.doWithLocalMethods(ReflectionUtils.java:320) ~[spring-core-6.2.10.jar:6.2.10]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.checkLookupMethods(AutowiredAnnotationBeanPostProcessor.java:476) ~[spring-beans-6.2.10.jar:6.2.10]
+	... 26 common frames omitted
+Caused by: java.lang.NoClassDefFoundError: OrderItem
+	at java.base/java.lang.Class.getDeclaredMethods0(Native Method) ~[na:na]
+	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3402) ~[na:na]
+	at java.base/java.lang.Class.getDeclaredMethods(Class.java:2504) ~[na:na]
+	at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:465) ~[spring-core-6.2.10.jar:6.2.10]
+	... 28 common frames omitted
+Caused by: java.lang.ClassNotFoundException: OrderItem
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641) ~[na:na]
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188) ~[na:na]
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520) ~[na:na]
+	at java.base/java.lang.Class.forName0(Native Method) ~[na:na]
+	at java.base/java.lang.Class.forName(Class.java:467) ~[na:na]
+	at org.springframework.boot.devtools.restart.classloader.RestartClassLoader.loadClass(RestartClassLoader.java:121) ~[spring-boot-devtools-3.5.5.jar:3.5.5]
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520) ~[na:na]
+	... 32 common frames omitted
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.5)
+
+2025-12-31T16:35:02.235+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Starting WebprojrctApplication using Java 17.0.8 with PID 24368 (D:\project-cuoi-ky1\BE-Nice-develop\target\classes started by as in D:\project-cuoi-ky1\BE-Nice-develop)
+2025-12-31T16:35:02.235+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : No active profile set, falling back to 1 default profile: "default"
+2025-12-31T16:35:02.893+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:35:02.895+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-31T16:35:02.993+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 96 ms. Found 21 JPA repository interfaces.
+2025-12-31T16:35:02.995+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31T16:35:02.995+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-12-31T16:35:03.009+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminOrderItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.009+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminOrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.admin.repository.AdminUserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.cart.repository.CartItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.cart.repository.CartRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.category.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.category.repo.CategoryRepo; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.ChatConversationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.ChatMessageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.chatbot.repository.VectorDocumentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.favorite.repository.FavoriteRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.notification.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.order.repository.OrderItemRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.order.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.product.repository.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.promotion.repository.CouponRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.review.repository.ReviewReplyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.review.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.010+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.user.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.011+07:00  INFO 24368 --- [webproject] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.proj.webprojrct.user.repository.UserTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31T16:35:03.011+07:00  INFO 24368 --- [webproject] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 0 Redis repository interfaces.
+2025-12-31T16:35:03.133+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-12-31T16:35:03.134+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-31T16:35:03.135+07:00  INFO 24368 --- [webproject] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-12-31T16:35:03.155+07:00  INFO 24368 --- [webproject] [  restartedMain] o.a.c.c.C.[Tomcat-1].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2025-12-31T16:35:03.155+07:00  INFO 24368 --- [webproject] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 918 ms
+2025-12-31T16:35:03.236+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Starting...
+2025-12-31T16:35:03.268+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-6 - Added connection org.postgresql.jdbc.PgConnection@6a54f24c
+2025-12-31T16:35:03.268+07:00  INFO 24368 --- [webproject] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Start completed.
+2025-12-31T16:35:03.272+07:00  WARN 24368 --- [webproject] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-31T16:35:03.281+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-31T16:35:03.746+07:00  INFO 24368 --- [webproject] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31T16:35:03.813+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.security.SecurityDebugFilter   : Filter 'securityDebugFilter' configured for use
+2025-12-31T16:35:03.813+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2025-12-31T16:35:04.095+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.EmbeddingService   : ? Initializing Embedding Model (all-MiniLM-L6-v2)...
+2025-12-31T16:35:04.095+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.EmbeddingService   : ? Embedding Model initialized successfully
+2025-12-31T16:35:04.095+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Initializing Google Gemini Chat Model...
+2025-12-31T16:35:04.095+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? API Key configured (length: 39)
+2025-12-31T16:35:04.096+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Google Gemini Chat Model initialized successfully
+2025-12-31T16:35:05.219+07:00  INFO 24368 --- [webproject] [  restartedMain] c.p.w.chatbot.service.LLMService         : ? Gemini API test successful: OK
+2025-12-31T16:35:05.409+07:00  WARN 24368 --- [webproject] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-31T16:35:05.542+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-12-31T16:35:05.556+07:00  INFO 24368 --- [webproject] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2025-12-31T16:35:05.558+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.SecurityConfiguration        : CSRF protection disabled
+2025-12-31T16:35:05.559+07:00 DEBUG 24368 --- [webproject] [  restartedMain] c.p.w.c.c.s.SecurityConfiguration        : Session management: STATELESS (JWT-based authentication)
+2025-12-31T16:35:05.598+07:00  WARN 24368 --- [webproject] [  restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2025-12-31T16:35:06.172+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-12-31T16:35:06.186+07:00  INFO 24368 --- [webproject] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-12-31T16:35:06.194+07:00  INFO 24368 --- [webproject] [  restartedMain] c.proj.webprojrct.WebprojrctApplication  : Started WebprojrctApplication in 3.973 seconds (process running for 72.707)
+2025-12-31T16:35:06.197+07:00  INFO 24368 --- [webproject] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation delta:
+
+
+==========================
+CONDITION EVALUATION DELTA
+==========================
+
+
+Positive matches:
+-----------------
+
+   CacheMetricsAutoConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.cache.CacheManager; SearchStrategy: all) found bean 'cacheManager' (OnBeanCondition)
+
+   CacheMetricsRegistrarConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider,io.micrometer.core.instrument.MeterRegistry; SearchStrategy: all) found beans 'simpleMeterRegistry', 'redisCacheMeterBinderProvider' (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   MailHealthContributorAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBean (types: org.springframework.mail.javamail.JavaMailSenderImpl; SearchStrategy: all) did not find any beans of type org.springframework.mail.javamail.JavaMailSenderImpl (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.mail.javamail.JavaMailSenderImpl' (OnClassCondition)
+         - @ConditionalOnEnabledHealthIndicator management.health.defaults.enabled is considered true (OnEnabledHealthIndicatorCondition)
+
+   MailSenderAutoConfiguration:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.mail.MailSender; SearchStrategy: all) found beans of type 'org.springframework.mail.MailSender' javaMailSender (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required classes 'jakarta.mail.internet.MimeMessage', 'jakarta.activation.MimeType', 'org.springframework.mail.MailSender' (OnClassCondition)
+         - AnyNestedCondition 1 matched 1 did not; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.JndiNameProperty @ConditionalOnProperty (spring.mail.jndi-name) did not find property 'spring.mail.jndi-name'; NestedCondition on MailSenderAutoConfiguration.MailSenderCondition.HostProperty @ConditionalOnProperty (spring.mail.host) matched (MailSenderAutoConfiguration.MailSenderCondition)
+
+   OAuth2ClientWebSecurityAutoConfiguration.OAuth2SecurityFilterChainConfiguration:
+      Did not match:
+         - AllNestedConditions 1 matched 1 did not; NestedCondition on DefaultWebSecurityCondition.Beans @ConditionalOnMissingBean (types: org.springframework.security.web.SecurityFilterChain; SearchStrategy: all) found beans of type 'org.springframework.security.web.SecurityFilterChain' filterChain; NestedCondition on DefaultWebSecurityCondition.Classes @ConditionalOnClass found required classes 'org.springframework.security.web.SecurityFilterChain', 'org.springframework.security.config.annotation.web.builders.HttpSecurity' (DefaultWebSecurityCondition)
+
+   SpringBootWebSecurityConfiguration.WebSecurityEnablerConfiguration:
+      Did not match:
+         - @ConditionalOnMissingBean (names: springSecurityFilterChain; SearchStrategy: all) found beans named springSecurityFilterChain (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.config.annotation.web.configuration.EnableWebSecurity' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-12-31T16:35:24.902+07:00  INFO 24368 --- [webproject] [nio-8080-exec-2] o.a.c.c.C.[Tomcat-1].[localhost].[/]     : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-31T16:35:25.008+07:00 ERROR 24368 --- [webproject] [nio-8080-exec-3] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: java.lang.RuntimeException: Cannot extract user ID from authentication] with root cause
+
+java.lang.RuntimeException: Cannot extract user ID from authentication
+	at com.proj.webprojrct.common.util.SecurityUtil.getCurrentUserId(SecurityUtil.java:54) ~[classes/:na]
+	at com.proj.webprojrct.notification.controller.NotificationController.countUnreadNotifications(NotificationController.java:84) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.44.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.44.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:340) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:82) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:128) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:125) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:119) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at com.proj.webprojrct.common.config.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:64) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.5.3.jar:6.5.3]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:319) ~[spring-security-config-6.5.3.jar:6.5.3]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$4(HandlerMappingIntrospector.java:267) ~[spring-webmvc-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:240) ~[spring-security-config-6.5.3.jar:6.5.3]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at com.proj.webprojrct.common.config.security.SecurityDebugFilter.doFilterInternal(SecurityDebugFilter.java:20) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.10.jar:6.2.10]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:116) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:398) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1769) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1189) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:658) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.44.jar:10.1.44]
+	at java.base/java.lang.Thread.run(Thread.java:833) ~[na:na]
+
+2025-12-31T16:35:25.245+07:00  WARN 24368 --- [webproject] [nio-8080-exec-2] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 01000
+2025-12-31T16:35:25.245+07:00  WARN 24368 --- [webproject] [nio-8080-exec-2] o.h.engine.jdbc.spi.SqlExceptionHelper   : database "cps_db" has a collation version mismatch
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:10 min
+[INFO] Finished at: 2025-12-31T16:35:49+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.5:run (default-cli) on project webprojrct: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

@@ -354,34 +354,65 @@ public class UserService {
             user.setAddress(request.getAddress());
         }
 
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+
         User updatedUser = this.userRepository.save(user);
         return userMapper.toResponse(updatedUser);
     }
 
-    // public UserResponse handleUserAvtUpdateRequest(MultipartFile avatar, Authentication authentication) throws IOException {
-    //     if (authentication == null || !authentication.isAuthenticated()
-    //             || authentication instanceof AnonymousAuthenticationToken) {
-    //         throw new UnauthenticatedException("Bạn chưa đăng nhập, đăng nhập để tiếp tục.");
-    //     }
-    //     String userName = authentication.getName();
-    //     User user = userRepository.findByEmail(userName)
-    //             .orElseThrow(() -> new EntityNotExistException(Common.USER_NOT_FOUND));
-    //     // Update avatar
-    //     if (avatar != null && !avatar.isEmpty()) {
-    //         AvatarStorageService avatarStorageService = new AvatarStorageService(Paths.get("uploads/avatars"));
-    //         try {
-    //             String originalFilename = Paths.get(avatar.getOriginalFilename()).getFileName().toString();
-    //             String savedFilename = avatarStorageService.save(originalFilename, avatar.getInputStream());
-    //             String avatarUrl = "/uploads/avatars/" + savedFilename; // Nếu client sẽ gọi API này
-    //             //avatarStorageService.delete(user.getAvatarUrl()); // Xóa avatar cũ nếu có
-    //             user.setAvatarUrl(avatarUrl);
-    //         } catch (IOException e) {
-    //             throw new RuntimeException("Lỗi khi lưu file avatar: " + e.getMessage(), e);
-    //         }
-    //     }
-    //     User updatedUser = this.userRepository.save(user);
-    //     return userMapper.toResponse(updatedUser);
-    // }
+    public UserResponse handleUserAvtUpdateRequest(MultipartFile avatar, Authentication authentication) throws IOException {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new UnauthenticatedException("Bạn chưa đăng nhập, đăng nhập để tiếp tục.");
+        }
+        String userName = authentication.getName();
+        User user = userRepository.findByEmail(userName)
+                .orElseThrow(() -> new EntityNotExistException(Common.USER_NOT_FOUND));
+        
+        log.info("🔵 Upload avatar for user: {} - Current avatar: {}", userName, user.getAvatarUrl());
+        
+        // Update avatar
+        if (avatar != null && !avatar.isEmpty()) {
+            try {
+                // Create avatars directory if not exists
+                Path uploadDir = Paths.get("uploads/avatars");
+                if (!Files.exists(uploadDir)) {
+                    Files.createDirectories(uploadDir);
+                }
+                
+                // Generate unique filename
+                String originalFilename = avatar.getOriginalFilename();
+                String extension = "";
+                if (originalFilename != null && originalFilename.contains(".")) {
+                    extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                }
+                String newFilename = UUID.randomUUID().toString() + extension;
+                
+                // Save file
+                Path filePath = uploadDir.resolve(newFilename);
+                Files.copy(avatar.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                
+                // Set avatar URL
+                String avatarUrl = "/uploads/avatars/" + newFilename;
+                user.setAvatarUrl(avatarUrl);
+                
+                log.info("🟢 Avatar saved: {} -> {}", originalFilename, avatarUrl);
+            } catch (IOException e) {
+                log.error("🔴 Error saving avatar: {}", e.getMessage());
+                throw new RuntimeException("Lỗi khi lưu file avatar: " + e.getMessage(), e);
+            }
+        }
+        
+        User updatedUser = this.userRepository.save(user);
+        log.info("🟢 User saved with avatar: {}", updatedUser.getAvatarUrl());
+        
+        UserResponse response = userMapper.toResponse(updatedUser);
+        log.info("🟢 Response avatar: {}", response.getAvatarUrl());
+        
+        return response;
+    }
     public UserCreateResponse createNewUser(UserCreateRequest request) {
         if (this.userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException(Common.USER_ALREADY_EXIST);

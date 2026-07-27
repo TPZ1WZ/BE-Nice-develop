@@ -15,4 +15,5 @@ public class UserProfileUpdateRequest {
     
     private String phone;
     private String address;
+    private String password;
 }
